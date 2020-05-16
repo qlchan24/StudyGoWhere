@@ -15,3 +15,17 @@ def index(request):
 
 def home(request):
     return HttpResponse("home")
+
+# def contribution(request):
+#    return
+
+
+def locationpage(request, location):
+    locationquery = StudySpot.objects.filter(locationName=location)
+    context = {
+        "location": location,
+        "openingTime": locationquery.first.openingTime,
+        "closingTime": locationquery.first.closingTime,
+        "levelNumber": locationquery.order_by().values('levelNumber').distinct()
+    }
+    return render(request, "sgw/locationpage.html", context)

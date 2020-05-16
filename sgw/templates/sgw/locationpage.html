@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<head>
+    <title>
+        {{location}}
+    </title>
+</head>
+<body>
+    <div>
+        operating times:{{openingTime}}-{{closingTime}}
+    </div>
+    <ul>
+        {% for ln in levelNumber%}
+            <li>
+                {{ln}}
+            </li>
+        {% endfor %}
+    </ul>
+</body>

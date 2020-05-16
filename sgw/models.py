@@ -2,7 +2,8 @@ from django.db import models
 
 # Create your models here.
 
-class StudySpot(models.Model): 
+
+class StudySpot(models.Model):
     crowdednessRating = models.IntegerField()
     airConditioned = True
     discussionFriendly = True
@@ -10,12 +11,6 @@ class StudySpot(models.Model):
 
     levelNumber = models.IntegerField()
     locationName = models.CharField(max_length=100)
-
+    openingTime = models.IntegerField()
     closingTime = models.IntegerField()
-
-
-
-    
-
-
 
