@@ -14,5 +14,5 @@ class StudySpot(models.Model):
 
     levelNumber = models.IntegerField()
     locationName = models.CharField(max_length=100)
-    openingTime = models.IntegerField()
-    closingTime = models.IntegerField()
+    openingTime = models.IntegerField()  # need to change to timefield
+    closingTime = models.IntegerField()  # need to change to timefield
