@@ -3,11 +3,12 @@ from django.forms import ModelForm
 from django.db import models
 from .models import StudySpot
 
-class ContributeStudySpotForm(ModelForm): 
+class ContributeStudySpotForm(forms.ModelForm): 
     class Meta: 
         model = StudySpot
-        fields = ['description','crowdednessRating','airConditioned','discussionFriendly',
+        fields = ['description','crowdednessRating','airConditioned','discussionFriendly', 
         'wallSockets','levelNumber','locationName','openingTime','closingTime']
+        # widgets = {'description': forms.TextInput()}
 
     # description = forms.CharField(max_length=100)
     # class Meta:
