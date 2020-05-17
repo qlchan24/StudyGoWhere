@@ -4,6 +4,7 @@ from django.shortcuts import render
 
 from .models import StudySpot
 from .forms import ContributeStudySpotForm
+from django.urls import reverse
 
 # Create your views here.
 
@@ -34,7 +35,8 @@ def contributeStudySpot(request):
     if request.method == 'POST':
         form = ContributeStudySpotForm(request.POST)
         if form.is_valid():
-            return HttpResponse('alright')  # not sure about this?
+            StudySpot = form.save()
+            return HttpResponseRedirect(reverse('sgw:list-of-locations'))
     else:
         form = ContributeStudySpotForm()
 

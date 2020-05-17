@@ -1,5 +1,10 @@
-<form action="/studyspot-contribution/" method="post">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit"/>
-</form>
+<!DOCTYPE html>
+<head>
+  <title>form</title>
+</head>
+<body>
+  <form action="/studyspot-contribution/" method="post">
+    {% csrf_token %} {{ form }}
+    <input type="submit" value="Submit" />
+  </form>
+</body>

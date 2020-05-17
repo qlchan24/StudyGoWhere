@@ -5,14 +5,18 @@
     </title>
 </head>
 <body>
+    <h1>{{location}}</h1>
     <div>
         operating times:{{openingTime}}-{{closingTime}}
     </div>
-    <ul>
-        {% for ln in levelNumber%}
-            <li>
-                {{ln}}
-            </li>
-        {% endfor %}
-    </ul>
+    <div>
+        Levels:
+        <ul>
+            {% for ln in levelNumber%}
+                <li>
+                    {{ln}}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 </body>
