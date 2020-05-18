@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<title> Contribute a Rating! </title>
+<h1> Contribute a Rating! </h1>
+
+<h2> Choose a StudySpot to rate: </h2>        <!-- This presentation as a list have to change -->  
+        <ul> 
+            {% for ss in studyspots%}
+                <li>
+                    {{ss}}
+                </li>
+            {% endfor %}
+        </ul> 
+
+<form action="/rating-contribution/" method="post">
+    {% csrf_token %}
+    <label for="crowdedness">Gauge the crowdedness of this StudySpot:</label>
+    <input type="range" id="crowdedness">
+    <table>
+    {{ form.as_table }}
+    </table>
+    <input type="submit" value="Submit">
+</form>
+</html>

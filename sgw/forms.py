@@ -8,7 +8,10 @@ class ContributeStudySpotForm(forms.ModelForm):
         model = StudySpot
         fields = ['description','crowdednessRating','airConditioned','discussionFriendly', 
         'wallSockets','levelNumber','locationName','openingTime','closingTime']
-        # widgets = {'description': forms.TextInput()}
+        widgets = {'airConditioned': forms.RadioSelect, 
+        'discussionFriendly': forms.RadioSelect,
+        'wallSockets':forms.RadioSelect
+        }
 
     # description = forms.CharField(max_length=100)
     # class Meta:
@@ -24,3 +27,6 @@ class ContributeStudySpotForm(forms.ModelForm):
 
     # closingTime = models.IntegerField()
     
+class ContributeRatingForm(forms.Form): 
+    crowdednessRating = models.IntegerField()
+    timeOfRating = models.DateTimeField()       # doesnt really work for now
