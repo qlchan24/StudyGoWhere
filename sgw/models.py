@@ -19,7 +19,7 @@ class StudySpot(models.Model):
     closingTime = models.TimeField()  # need to change to timefield
 
     def __str__(self):
-        return f"{self.locationName} > Level {self.levelNumber} > {self.description}"
+        return f"{self.locationName} -> Level {self.levelNumber} -> {self.description}"
     
 class Rating(models.Model): 
     crowdedness = models.IntegerField()         # need to change to slider

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
-from .models import StudySpot
+from .models import StudySpot, Rating
 from .forms import ContributeStudySpotForm, ContributeRatingForm
 from django.urls import reverse
 
@@ -34,7 +34,8 @@ def locationpage(request, location):
 def studyspotpage(request, studyspot): 
     studyspotquery = StudySpot.objects.filter(description=studyspot)
     context = { 
-        "studyspot": studyspot
+        "studyspot": studyspot,
+         "ratings": list(Rating.objects.filter(studyspot=studyspot))
     }
     return render(request, "sgw/studyspotpage.html", context)
 
