@@ -18,8 +18,10 @@ class StudySpot(models.Model):
 
     levelNumber = models.IntegerField()
     locationName = models.CharField(max_length=100)
-    # openingTime = models.TimeField()  # need to change to timefield
-    # closingTime = models.TimeField()  # need to change to timefield
+    # need to change to timefield
+    openingTime = models.TimeField(default='20:00')
+    # need to change to timefield
+    closingTime = models.TimeField(default='20:00')
 
     def __str__(self):
         return f"{self.locationName} -> Level {self.levelNumber} -> {self.description}"

@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from sgw.models import StudySpot
+from sgw.models import StudySpot, Rating
 
 # Create your tests here. test method names have to start with "test_"
 
@@ -17,8 +17,8 @@ class locationDbTest(TestCase):
             wallSockets=True,
             levelNumber=3,
             locationName="Hssml",
-            openingTime=1100,
-            closingTime=1200)
+            openingTime="11:00",
+            closingTime="12:00")
 
         StudySpot.objects.create(
             description="com1 annex",
@@ -28,8 +28,14 @@ class locationDbTest(TestCase):
             wallSockets=True,
             levelNumber=2,
             locationName="com1",
-            openingTime=1300,
-            closingTime=1900)
+            openingTime="13:00",
+            closingTime="19:00")
+
+        Rating.objects.create(
+            crowdedness=2,
+            studyspot="com1 annex",
+            whenRated="12:00"
+        )
 
         self.client = Client()
 
@@ -45,3 +51,6 @@ class locationDbTest(TestCase):
         self.assertEqual(response.context['levelNumber'], [2])
         self.assertEqual(response.context['openingTime'], 1300)
         self.assertEqual(response.context['closingTime'], 1900)
+
+    def test_query(self):
+        Rating.objects.filter(studyspot='com1 annex')

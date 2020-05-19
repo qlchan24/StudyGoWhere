@@ -32,11 +32,12 @@ def locationpage(request, location):
     return render(request, "sgw/locationpage.html", context)
 
 
-def studyspotpage(request, studyspot):
+def studyspotpage(request, location, studyspot):
     studyspotquery = StudySpot.objects.filter(description=studyspot)
     context = {
         "studyspot": studyspot,
-        "ratings": list(Rating.objects.filter(studyspot=studyspot))
+        "ratings": list(Rating.objects.filter(studyspot=studyspotquery.first())),
+        "location": location,
     }
     return render(request, "sgw/studyspotpage.html", context)
 
