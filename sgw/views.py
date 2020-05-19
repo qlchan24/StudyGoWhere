@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
-from .models import StudySpot, Rating
+from .models import StudySpot, Rating, Location
 from .forms import ContributeStudySpotForm, ContributeRatingForm
 from django.urls import reverse
 
@@ -11,7 +11,7 @@ from django.urls import reverse
 
 def index(request):
     context = {
-        "locations": list(StudySpot.objects.order_by().values_list('locationName', flat=True).distinct())
+        "locations": list(Location.objects.all())
     }
     return render(request, "sgw/index.html", context)
 
@@ -21,13 +21,13 @@ def home(request):
 
 
 def locationpage(request, location):
-    locationquery = StudySpot.objects.filter(locationName=location)
+    loc = get_object_or_404(Location, locationName=location)
     context = {
-        "location": location,
-        "openingTime": list(locationquery.values_list('openingTime', flat=True))[0],
-        "closingTime": list(locationquery.values_list('closingTime', flat=True))[0],
-        "levelNumber": list(locationquery.order_by().values_list('levelNumber', flat=True).distinct()),
-        "description": list(locationquery.order_by().values_list('description', flat=True).distinct())
+        "location": loc,
+        "openingTime": loc.openingTime,
+        "closingTime": loc.closingTime,
+        "levelNumber": list(StudySpot.objects.filter(Location=loc).values_list('levelNumber', flat=True).distinct()),
+        "description": list(StudySpot.objects.filter(Location=loc))
     }
     return render(request, "sgw/locationpage.html", context)
 
