@@ -35,16 +35,8 @@ def contributeStudySpot(request):
     if request.method == 'POST':
         form = ContributeStudySpotForm(request.POST)
         if form.is_valid():
-<<<<<<< HEAD
-            studyspot = form.save()
-            # return HttpResponse("/thanks/")
-            # return HttpResponseRedirect('index.html')
-            return HttpResponseRedirect(reverse('sgw:list-of-locations'))
-            # return render(request, 'sgw/index.html', {'studyspots':studyspots})  # not sure about this?
-=======
             StudySpot = form.save()
             return HttpResponseRedirect(reverse('sgw:list-of-locations'))
->>>>>>> 5dc49726174b49bdeef29c62b7b037ffc029fefb
     else:
         form = ContributeStudySpotForm()
 
