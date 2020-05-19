@@ -11,4 +11,6 @@ urlpatterns = [
          name="studyspot-contribution-page"),
     path("rating-contribution/", views.contributeRating,
          name="rating-contribution-page"),
+     path("location-contribution/", views.contributeLocation,
+         name="location-contribution-page"),
 ]

@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from django.db import models
-from .models import StudySpot, Rating
+from .models import StudySpot, Rating, Location
 
 
 class ContributeStudySpotForm(forms.ModelForm):
@@ -35,3 +35,8 @@ class ContributeRatingForm(forms.ModelForm):
 
     # crowdednessRating = models.IntegerField()
     # timeOfRating = models.DateTimeField()       # doesnt really work for now
+
+class ContributeLocationForm(forms.ModelForm):
+    class Meta:
+        model = Location
+        fields = '__all__'

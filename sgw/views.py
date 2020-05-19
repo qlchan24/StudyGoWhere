@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
 from .models import StudySpot, Rating, Location
-from .forms import ContributeStudySpotForm, ContributeRatingForm
+from .forms import ContributeStudySpotForm, ContributeRatingForm, ContributeLocationForm
 from django.urls import reverse
 
 # Create your views here.
@@ -64,3 +64,14 @@ def contributeRating(request):
         form = ContributeRatingForm()
 
     return render(request, 'contributeRating.html', {'form': form, "studyspots": list(StudySpot.objects.all())})
+
+def contributeLocation(request):
+    if request.method == 'POST':
+        form = ContributeLocationForm(request.POST)
+        if form.is_valid():
+            location = form.save()
+            return HttpResponseRedirect(reverse('sgw:list-of-locations'))
+            # return render(request, 'sgw/index.html', {'studyspots':studyspots})  # not sure about this?
+    else:
+        form = ContributeLocationForm()
+    return render(request, 'contributeLocation.html', {'form': form})
