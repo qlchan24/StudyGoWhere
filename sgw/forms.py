@@ -3,21 +3,21 @@ from django.forms import ModelForm
 from django.db import models
 from .models import StudySpot, Rating
 
-class ContributeStudySpotForm(forms.ModelForm): 
-    class Meta: 
+
+class ContributeStudySpotForm(forms.ModelForm):
+    class Meta:
         model = StudySpot
-        fields = ['description','crowdednessRating','airConditioned','discussionFriendly', 
-        'wallSockets','levelNumber','locationName','openingTime','closingTime']
-        widgets = {'airConditioned': forms.RadioSelect, 
-        'discussionFriendly': forms.RadioSelect,
-        'wallSockets':forms.RadioSelect
-        }
+        fields = '__all__'
+        widgets = {'airConditioned': forms.RadioSelect,
+                   'discussionFriendly': forms.RadioSelect,
+                   'wallSockets': forms.RadioSelect
+                   }
 
     # description = forms.CharField(max_length=100)
     # class Meta:
     #     model = StudySpot
     #     widgets = {
-    #         'airConditioned': forms.RadioSelect, 
+    #         'airConditioned': forms.RadioSelect,
     #         'discussionFriendly': forms.RadioSelect,
     #         'wallSockets': forms.RadioSelect,
     #     }
@@ -26,9 +26,10 @@ class ContributeStudySpotForm(forms.ModelForm):
     # crowdednessRating = models.IntegerField()
 
     # closingTime = models.IntegerField()
-    
-class ContributeRatingForm(forms.ModelForm): 
-    class Meta: 
+
+
+class ContributeRatingForm(forms.ModelForm):
+    class Meta:
         model = Rating
         fields = '__all__'
 
