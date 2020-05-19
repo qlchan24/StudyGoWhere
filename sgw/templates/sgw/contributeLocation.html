@@ -4,11 +4,16 @@
 <h1> Contribute a Location! </h1>
 </head>
 <body>
+
   <form action="/location-contribution/" method="post">
     {% csrf_token %}
     <table>
-      {{ form.as_table }}
+      {{ form.as_p }}
     </table>
     <input type="submit" value="Submit" />
   </form>
+
+    {% if form.errors %}
+    <p>username or password not correct</p>
+    {% endif %}
 </body>
