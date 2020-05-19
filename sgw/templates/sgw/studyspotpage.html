@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<head>
+    <title>
+        {{studyspot}}
+    </title>
+</head>
+<body>
+    <h1> {{studyspot}} </h1> 
+    <div>
+        Here are the crowdedness ratings for this StudySpot:
+        <ul>
+            {% for rating in ratings%}
+                <li>
+                    {{rating}}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
