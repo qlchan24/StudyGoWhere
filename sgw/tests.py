@@ -1,6 +1,5 @@
 from django.test import TestCase, Client
-from sgw.models import StudySpot, Rating
-
+from sgw.models import *
 # Create your tests here. test method names have to start with "test_"
 
 
@@ -9,27 +8,35 @@ class locationDbTest(TestCase):
     def setUp(self):
         # create more test database objects if u want using the same format
 
+        Location.objects.create(
+            locationName="Hssml",
+            openingTime="11:00",
+            closingTime="12:00"
+        )
+
+        Location.objects.create(
+            locationName="com1",
+            openingTime="13:00",
+            closingTime="19:00"
+        )
+
         StudySpot.objects.create(
             description="hssml DR5",
-            crowdednessRating=3,
             airConditioned=True,
             discussionFriendly=True,
             wallSockets=True,
             levelNumber=3,
-            locationName="Hssml",
-            openingTime="11:00",
-            closingTime="12:00")
+            locationName=Location.objects.get(locationName="Hssml")
+        )
 
         StudySpot.objects.create(
             description="com1 annex",
-            crowdednessRating=5,
             airConditioned=True,
             discussionFriendly=False,
             wallSockets=True,
             levelNumber=2,
-            locationName="com1",
-            openingTime="13:00",
-            closingTime="19:00")
+            locationName=Location.objects.get(locationName="com1")
+        )
 
         Rating.objects.create(
             crowdedness=2,

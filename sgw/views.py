@@ -26,8 +26,8 @@ def locationpage(request, location):
         "location": loc,
         "openingTime": loc.openingTime,
         "closingTime": loc.closingTime,
-        "levelNumber": list(StudySpot.objects.filter(Location=loc).values_list('levelNumber', flat=True).distinct()),
-        "description": list(StudySpot.objects.filter(Location=loc))
+        "levelNumber": list(StudySpot.objects.filter(locationName=loc).values_list('levelNumber', flat=True).distinct()),
+        "description": list(StudySpot.objects.filter(locationName=loc))
     }
     return render(request, "sgw/locationpage.html", context)
 
@@ -64,6 +64,7 @@ def contributeRating(request):
         form = ContributeRatingForm()
 
     return render(request, 'contributeRating.html', {'form': form, "studyspots": list(StudySpot.objects.all())})
+
 
 def contributeLocation(request):
     if request.method == 'POST':
