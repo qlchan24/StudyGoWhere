@@ -36,7 +36,7 @@ def locationpage(request, location):
 
 
 def studyspotpage(request, location, studyspot):
-    studyspotquery = StudySpot.objects.get(description=studyspot)
+    studyspotquery = get_object_or_404(StudySpot, description=studyspot)
     context = {
         "studyspot": studyspot,
         "ratings": list(Rating.objects.filter(studyspot=studyspotquery)),
@@ -74,12 +74,16 @@ def contributeLocation(request):
         form = ContributeLocationForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data['locationName']
-            if Location.objects.filter(locationName=name).exists(): 
-                messages.error(request, "fdkfdhlkfeh") # error not showing
+            if Location.objects.filter(locationName=name).exists():
+                messages.error(request, "fdkfdhlkfeh")  # error not showing
                 # return HttpResponseRedirect(reverse('sgw:location-contribution-page'))
-            else: 
+            else:
                 location = form.save()
                 return HttpResponseRedirect(reverse('sgw:list-of-locations'))
     else:
         form = ContributeLocationForm()
     return render(request, 'contributeLocation.html', {'form': form})
+
+
+def mapview(request):
+    return render(request, "sgw/leaflet.html")

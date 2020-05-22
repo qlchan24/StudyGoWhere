@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'leaflet',
+    # 'django.contrib.gis',
     'sgw.apps.SgwConfig',
 ]
 
@@ -85,6 +87,13 @@ DATABASES = {
     }
 }
 
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER': (1.296894, 103.776387),
+    'DEFAULT_ZOOM': 16,
+    'MIN_ZOOM': 15,
+    'MAX_ZOOM': 18,
+    'RESET_VIEW': False,
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

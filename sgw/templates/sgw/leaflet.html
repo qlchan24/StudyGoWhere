@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  {% load leaflet_tags %}
+
+  <head>
+    <title>map</title>
+    {% leaflet_css %} {% leaflet_js %}
+    <style>
+      #mymap {
+        height: 100vh;
+      }
+    </style>
+    <script>
+      function map_init(map, options) {
+        // for each study spot in list:
+        // get point lat and lon
+        //var lon = "{{ studyspot.geometry.x }}";
+        //var lat = "{{ studyspot.geometry.y }}";
+
+        // zoom to point & add it to map
+        L.map("mymap").setView([1.296894, 103.776387], 16);
+        //L.marker([lat, lon]).addTo(map);
+      }
+    </script>
+  </head>
+  <body>
+    {% leaflet_map "mymap" callback="map_init" %} {% leaflet_map "mymap" %}
+  </body>
+</html>
