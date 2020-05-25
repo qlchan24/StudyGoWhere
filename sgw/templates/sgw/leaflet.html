@@ -3,24 +3,87 @@
   {% load leaflet_tags %}
 
   <head>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>map</title>
     {% leaflet_css %} {% leaflet_js %}
     <style>
+      body {
+        padding: 0;
+        margin: 0;
+      }
+      html,
+      body,
       #mymap {
-        height: 100vh;
+        height: 100%;
+        width: 100vw;
       }
     </style>
     <script>
       function map_init(map, options) {
-        // for each study spot in list:
-        // get point lat and lon
-        //var lon = "{{ studyspot.geometry.x }}";
-        //var lat = "{{ studyspot.geometry.y }}";
+        //perhaps can include a button to reset view, or another to fly to current location.
+        //perhaps limit map boundaries too.
+        //default location: L.map("mymap").setView([1.296894, 103.776387], 16);
+        map.locate({ setView: true, maxZoom: 16 });
+        /*
+        To include the studyspots:
+        method 1:
+        for each study spot in list:
+        get point lat and lon
+        var lon = "{{ studyspot.geometry.x }}";
+        var lat = "{{ studyspot.geometry.y }}";
+        add marker to map (and check for color):
+        for red: L.marker([lat, lon],{color: 'red',fillColor: '#f03',fillOpacity: 0.5,}).addTo(map);
+        */
+        /*
+        method 2:geojson
+        var studyspots = [{
+          "type": "Feature",
+          "properties": { "name": "hssml","crowdedness": "2","show_on_map": true },
+          "geometry": {
+            "type": "Point",
+            "coordinates": [x1,y1]
+          }
+        }, {
+          "type": "Feature",
+          "properties": { "name": "com1 annex","crowdedness": "3","show_on_map": true },
+          "geometry": {
+            "type": "Point",
+            "coordinates": [x2,y2]
+          }
+        }];
 
-        // zoom to point & add it to map
-        L.map("mymap").setView([1.296894, 103.776387], 16);
-        //L.marker([lat, lon]).addTo(map);
+        function onEachFeature(feature, layer) {
+          layer.on({
+            mouseover: highlightFeature, //to be implemented
+            mouseout: resetHighlight, //to be implemented
+            click: do_something //to be implemented
+          });
+        }
+        
+        L.geoJSON(studyspots, {
+          style: function (feature) {
+            switch (feature.properties.crowdedness) {
+              case '3': return { color: "#ff0000" };
+              case '2': return { color: "#ffff00" };
+              case '1': return { color: "#00ff00" };
+            }
+          },
+          filter: function(feature, layer) {
+            return feature.properties.show_on_map;
+          },
+          onEachFeature: onEachFeature
+        }).addTo(map);      */
       }
+
+      function onLocationFound(e) {
+        var radius = e.accuracy;
+        L.circle(e.latlng, radius).addTo(map);
+      }
+
+      map.on("locationfound", onLocationFound);
     </script>
   </head>
   <body>

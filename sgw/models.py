@@ -1,5 +1,6 @@
 from django.db import models
 from django import forms
+from djgeojson.fields import PointField
 
 # Create your models here.
 BOOL_CHOICES = ((True, 'Yes'), (False, 'No'))
@@ -9,6 +10,7 @@ class Location(models.Model):
     locationName = models.CharField(max_length=100)
     openingTime = models.TimeField(default='20:00')
     closingTime = models.TimeField(default='20:00')
+    geom = PointField()
 
     def __str__(self):
         return self.locationName
@@ -22,7 +24,6 @@ class StudySpot(models.Model):
         choices=BOOL_CHOICES, blank=False, null=True, default=None)
     wallSockets = models.BooleanField(
         choices=BOOL_CHOICES, blank=False, null=True, default=None)
-
     levelNumber = models.IntegerField()
     locationName = models.ForeignKey(Location, on_delete=models.CASCADE)
 
