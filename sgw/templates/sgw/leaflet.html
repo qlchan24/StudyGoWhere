@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  {% load leaflet_tags %}
+  {% load leaflet_tags %} 
 
   <head>
     <meta
@@ -21,12 +21,43 @@
         width: 100vw;
       }
     </style>
-    <script>
-      function map_init(map, options) {
+    <script type="text/javascript">
+      var dataurl = '{% url "sgw:data" %}';
+
+      window.addEventListener("map:init", function (event) {
+        var map = event.detail.map;
+        // Download GeoJSON data with Ajax
+        fetch(dataurl)
+          .then(function(resp) {
+            return resp.json();
+          })
+          .then(function(data) {
+            L.geoJson(data, {
+              onEachFeature: function onEachFeature(feature, layer) {
+                var props = feature.properties;
+                var content = `${props.locationName}
+                opening time:${props.openingTime}`;
+                layer.bindPopup(content);
+            }}).addTo(map);
+          });
+        
+        function onLocationFound(e) {
+        var radius = e.accuracy;
+        L.circle(e.latlng, radius).addTo(map);
+        }
+        map.on("locationfound", onLocationFound);
+
+        map.locate({ setView: true, maxZoom: 16 });
+      });
+      
+      //function map_init(map, options) {
+      
+
+      
         //perhaps can include a button to reset view, or another to fly to current location.
         //perhaps limit map boundaries too.
-        //default location: L.map("mymap").setView([1.296894, 103.776387], 16);
-        map.locate({ setView: true, maxZoom: 16 });
+        //default location: L.map("map").setView([1.296894, 103.776387], 16);
+
         /*
         To include the studyspots:
         method 1:
@@ -62,7 +93,7 @@
             click: do_something //to be implemented
           });
         }
-        
+
         L.geoJSON(studyspots, {
           style: function (feature) {
             switch (feature.properties.crowdedness) {
@@ -76,17 +107,15 @@
           },
           onEachFeature: onEachFeature
         }).addTo(map);      */
-      }
+      //}
 
-      function onLocationFound(e) {
-        var radius = e.accuracy;
-        L.circle(e.latlng, radius).addTo(map);
-      }
 
-      map.on("locationfound", onLocationFound);
     </script>
   </head>
   <body>
-    {% leaflet_map "mymap" callback="map_init" %} {% leaflet_map "mymap" %}
+    {% leaflet_map "mymap" %} 
+    <script>
+
+    </script>
   </body>
 </html>

@@ -1,5 +1,7 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
+from .models import Location
+from djgeojson.views import GeoJSONLayerView
 
 app_name = 'sgw'
 urlpatterns = [
@@ -15,4 +17,6 @@ urlpatterns = [
     path("location-contribution/", views.contributeLocation,
          name="location-contribution-page"),
     path("map/", views.mapview, name="map"),
+    re_path(r'^data.geojson$', GeoJSONLayerView.as_view(model=Location,
+                                                        properties=('locationName', 'geom', 'openingTime')), name="data"),
 ]
