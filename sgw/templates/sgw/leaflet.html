@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
   {% load leaflet_tags %} 
+ 
+  <!-- for sidebar icons --> 
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
   <head>
     <meta
@@ -9,6 +12,9 @@
     />
     <title>map</title>
     {% leaflet_css %} {% leaflet_js %}
+
+    <!-- for sidebar css file --> 
+    <link rel="stylesheet" href="../css/ol3-sidebar.css">
     <style>
       body {
         padding: 0;
@@ -48,6 +54,9 @@
         map.on("locationfound", onLocationFound);
 
         map.locate({ setView: true, maxZoom: 16 });
+
+        // add sidebar to mapview
+        var sidebar = L.control.sidebar('sidebar').addTo(map)
       });
       
       //function map_init(map, options) {
@@ -109,13 +118,34 @@
         }).addTo(map);      */
       //}
 
-
     </script>
   </head>
   <body>
-    {% leaflet_map "mymap" %} 
-    <script>
+    {% leaflet_map "mymap" %}
+    <div id="sidebar" class="sidebar collapsed">
+      <!-- navigation tabs -->
+      <div class="sidebar-tabs">
+        <ul role="tablist">
+          <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+        </ul>
+      </div>
 
-    </script>
+      <!-- tab panes -->
+      <div class="sidebar-content">
+        <div class="sidebar-pane" id="home">
+          <h1 class="sidebar-header">
+            Pane header text
+            <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+          </h1>
+
+          <p>Pane text</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="map" class="sidebar-map"></div>
+
+    <!-- for sidebar js --> 
+    <script type="text/javascript" src="../js/ol3-sidebar.js"></script>
   </body>
 </html>
