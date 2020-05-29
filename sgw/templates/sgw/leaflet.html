@@ -35,8 +35,8 @@
             L.geoJson(data, {
               onEachFeature: function onEachFeature(feature, layer) {
                 var props = feature.properties;
-                var content = `${props.locationName}
-                opening time:${props.openingTime}`;
+                var content = `<p>${props.locationName}</p>
+                <p>opening time: ${props.openingTime}</p>`;
                 layer.bindPopup(content);
             }}).addTo(map);
           });
