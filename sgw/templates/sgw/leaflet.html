@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html>
   {% load leaflet_tags %} 
- 
-  <!-- for sidebar icons --> 
-  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-
   <head>
+    <title>map</title>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>map</title>
+    <!-- for sidebar icons --> 
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     {% leaflet_css %} {% leaflet_js %}
 
     <!-- for sidebar css file --> 
-    <link rel="stylesheet" href="../css/ol3-sidebar.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'sgw/sidebar-v2/css/leaflet-sidebar.css' %}">
     <style>
       body {
         padding: 0;
@@ -25,6 +24,7 @@
       #mymap {
         height: 100%;
         width: 100vw;
+        font: 10pt "Helvetica Neue", Arial, Helvetica, sans-serif;
       }
     </style>
     <script type="text/javascript">
@@ -127,6 +127,7 @@
       <div class="sidebar-tabs">
         <ul role="tablist">
           <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+          <li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li>
         </ul>
       </div>
 
@@ -134,10 +135,9 @@
       <div class="sidebar-content">
         <div class="sidebar-pane" id="home">
           <h1 class="sidebar-header">
-            Pane header text
+            StudyGoWhere
             <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
           </h1>
-
           <p>Pane text</p>
         </div>
       </div>
@@ -146,6 +146,7 @@
     <div id="map" class="sidebar-map"></div>
 
     <!-- for sidebar js --> 
-    <script type="text/javascript" src="../js/ol3-sidebar.js"></script>
+    {% load static %}
+    <script src="{% static 'sgw/sidebar-v2/js/leaflet-sidebar.js' %}"></script>
   </body>
 </html>
