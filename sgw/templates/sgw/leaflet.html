@@ -32,6 +32,10 @@
 
       window.addEventListener("map:init", function (event) {
         var map = event.detail.map;
+
+        // add sidebar to mapview
+        var sidebar = L.control.sidebar('sidebar').addTo(map)
+
         // Download GeoJSON data with Ajax
         fetch(dataurl)
           .then(function(resp) {
@@ -39,12 +43,35 @@
           })
           .then(function(data) {
             L.geoJson(data, {
-              onEachFeature: function onEachFeature(feature, layer) {
+              onEachFeature: function onEachFeature(feature, layer) {     
+
                 var props = feature.properties;
                 var content = `<p>${props.locationName}</p>
                 <p>opening time: ${props.openingTime}</p>`;
-                layer.bindPopup(content);
-            }}).addTo(map);
+                layer.bindPopup(content);           
+                
+     /*     layer.on({
+            mouseover: (e) => this.openPopup(),
+              
+            mouseout: (e) => this.closePopup() 
+//           click: do_something //to be implemented
+          });
+      */
+          layer.on('mouseover', function (e) {
+            this.openPopup();
+        });
+        layer.on('mouseout', function (e) {
+            this.closePopup();
+        });
+
+        layer.on('click', function(e) {   
+           //some function  
+        });
+
+                
+            }
+
+            }).addTo(map);
           });
         
         function onLocationFound(e) {
@@ -55,8 +82,9 @@
 
         map.locate({ setView: true, maxZoom: 16 });
 
-        // add sidebar to mapview
-        var sidebar = L.control.sidebar('sidebar').addTo(map)
+        
+
+        
       });
       
       //function map_init(map, options) {
@@ -127,6 +155,7 @@
       <div class="sidebar-tabs">
         <ul role="tablist">
           <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+          <li><a href="#favourites" role="tab"><i class="fa fa-envelope"></i></a></li>
           <li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li>
         </ul>
       </div>
@@ -138,10 +167,25 @@
             StudyGoWhere
             <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
           </h1>
-          <p>Pane text</p>
+          <p>Pane text
+          
+          </p>
         </div>
+
+      <div class="sidebar-pane" id="favourites">
+          <h1 class="sidebar-header">Favourites<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+      </div>
+
+      <div class="sidebar-pane" id="profile">
+          <h1 class="sidebar-header">Your Profile<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+      </div>
+
       </div>
     </div>
+
+     
+
+      
 
     <div id="map" class="sidebar-map"></div>
 
