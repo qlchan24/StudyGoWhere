@@ -86,4 +86,7 @@ def contributeLocation(request):
 
 
 def mapview(request):
-    return render(request, "sgw/leaflet.html")
+    context = {
+        "locations": list(Location.objects.all())
+    }
+    return render(request, "sgw/leaflet.html", context)
