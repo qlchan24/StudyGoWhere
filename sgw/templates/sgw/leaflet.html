@@ -101,9 +101,14 @@
           .then(function (data) {
             L.geoJson(data, {
               onEachFeature: function onEachFeature(feature, layer) {
-                var props = feature.properties;
-                var content = `<p>${props.locationName}</p>
-                <p>opening hours: ${props.openingTime} - ${props.closingTime}</p>`;
+                var props = feature.properties;            
+                if (props.openingTime == props.closingTime) { 
+                  var content = `<p>${props.locationName}</p>
+                  <p>Always open</p>`;
+                } else {
+                  var content = `<p>${props.locationName}</p>
+                  <p>opening hours: ${props.openingTime} - ${props.closingTime}</p>`;
+                }
                 layer.bindPopup(content);
 
                 /*     layer.on({
@@ -253,7 +258,7 @@
           <ul id="myUL">
             {% for location in locations%}
             <li>
-              <a href="#">{{location}}</a>>
+              <a href="#">{{location}}</a>
               <!--to place actual links or dropdown menus-->
             </li>
             {% endfor %}

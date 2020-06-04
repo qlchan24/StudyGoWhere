@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 
 from .models import StudySpot, Rating, Location
@@ -7,6 +7,8 @@ from .forms import ContributeStudySpotForm, ContributeRatingForm, ContributeLoca
 from django.urls import reverse
 
 from django.contrib import messages
+
+from django.core import serializers
 
 # Create your views here.
 
@@ -90,3 +92,24 @@ def mapview(request):
         "locations": list(Location.objects.all())
     }
     return render(request, "sgw/leaflet.html", context)
+
+
+def locationjson(request):
+    all_json = serializers.serialize(
+        "json", Location.objects.all())
+    data = {"all_json": all_json}
+    return JsonResponse(data)
+
+
+def studyspotjson(request):
+    all_json = serializers.serialize(
+        "json", StudySpot.objects.all())
+    data = {"all_json": all_json}
+    return JsonResponse(data)
+
+
+def ratingjson(request):
+    all_json = serializers.serialize(
+        "json", Rating.objects.all())
+    data = {"all_json": all_json}
+    return JsonResponse(data)
