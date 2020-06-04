@@ -91,7 +91,7 @@
         var map = event.detail.map;
 
         // add sidebar to mapview
-        var sidebar = L.control.sidebar('sidebar').addTo(map)
+        var sidebar = L.control.sidebar("sidebar").addTo(map);
 
         // Download GeoJSON data with Ajax
         fetch(dataurl)
@@ -100,39 +100,30 @@
           })
           .then(function (data) {
             L.geoJson(data, {
-              onEachFeature: function onEachFeature(feature, layer) {     
-
+              onEachFeature: function onEachFeature(feature, layer) {
                 var props = feature.properties;
                 var content = `<p>${props.locationName}</p>
                 <p>opening time: ${props.openingTime}</p>`;
-<<<<<<< HEAD
-                layer.bindPopup(content);           
-                
-     /*     layer.on({
+                layer.bindPopup(content);
+
+                /*     layer.on({
             mouseover: (e) => this.openPopup(),
               
             mouseout: (e) => this.closePopup() 
 //           click: do_something //to be implemented
           });
       */
-          layer.on('mouseover', function (e) {
-            this.openPopup();
-        });
-        layer.on('mouseout', function (e) {
-            this.closePopup();
-        });
+                layer.on("mouseover", function (e) {
+                  this.openPopup();
+                });
+                layer.on("mouseout", function (e) {
+                  this.closePopup();
+                });
 
-        layer.on('click', function(e) {   
-           //some function  
-        });
-
-                
-            }
-
-=======
-                layer.bindPopup(content);
+                layer.on("click", function (e) {
+                  //some function
+                });
               },
->>>>>>> 7485222034211d6d6050d25f563879d67725824c
             }).addTo(map);
           });
 
@@ -143,15 +134,6 @@
         map.on("locationfound", onLocationFound);
 
         map.locate({ setView: true, maxZoom: 16 });
-
-<<<<<<< HEAD
-        
-
-        
-=======
-        // add sidebar to mapview
-        var sidebar = L.control.sidebar("sidebar").addTo(map);
->>>>>>> 7485222034211d6d6050d25f563879d67725824c
       });
 
       //function map_init(map, options) {
@@ -239,18 +221,15 @@
       <!-- navigation tabs -->
       <div class="sidebar-tabs">
         <ul role="tablist">
-<<<<<<< HEAD
-          <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
-          <li><a href="#favourites" role="tab"><i class="fa fa-envelope"></i></a></li>
-          <li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li>
-=======
           <li>
-            <a href="#home" role="tab"><i class="fa fa-bars"></i></a>
+            <a href="#home" role="tab"><i class="fa fa-search"></i></a>
+          </li>
+          <li>
+            <a href="#favourites" role="tab"><i class="fa fa-star"></i></a>
           </li>
           <li>
             <a href="#profile" role="tab"><i class="fa fa-user"></i></a>
           </li>
->>>>>>> 7485222034211d6d6050d25f563879d67725824c
         </ul>
       </div>
 
@@ -261,11 +240,6 @@
             StudyGoWhere
             <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
           </h1>
-<<<<<<< HEAD
-          <p>Pane text
-          
-          </p>
-=======
           <!-- search bar with filter-->
           <div class="inner-addon left-addon">
             <i class="fa fa-search"></i>
@@ -279,29 +253,31 @@
           <ul id="myUL">
             {% for location in locations%}
             <li>
-              <a href="#">{{location}}</a>
+              <a href="#">{{location}}</a>>
               <!--to place actual links or dropdown menus-->
             </li>
             {% endfor %}
           </ul>
           <p>fake copyright here. plus some site links</p>
->>>>>>> 7485222034211d6d6050d25f563879d67725824c
         </div>
 
-      <div class="sidebar-pane" id="favourites">
-          <h1 class="sidebar-header">Favourites<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-      </div>
+        <div class="sidebar-pane" id="favourites">
+          <h1 class="sidebar-header">
+            Favourites<span class="sidebar-close"
+              ><i class="fa fa-caret-left"></i
+            ></span>
+          </h1>
+        </div>
 
-      <div class="sidebar-pane" id="profile">
-          <h1 class="sidebar-header">Your Profile<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-      </div>
-
+        <div class="sidebar-pane" id="profile">
+          <h1 class="sidebar-header">
+            Your Profile<span class="sidebar-close"
+              ><i class="fa fa-caret-left"></i
+            ></span>
+          </h1>
+        </div>
       </div>
     </div>
-
-     
-
-      
 
     <div id="map" class="sidebar-map"></div>
 
