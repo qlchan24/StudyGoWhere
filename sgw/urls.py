@@ -18,5 +18,5 @@ urlpatterns = [
          name="location-contribution-page"),
     path("map/", views.mapview, name="map"),
     re_path(r'^data.geojson$', GeoJSONLayerView.as_view(model=Location,
-                                                        properties=('locationName', 'geom', 'openingTime')), name="data"),
+                                                        properties=('locationName', 'geom', 'openingTime', 'closingTime')), name="data"),
 ]

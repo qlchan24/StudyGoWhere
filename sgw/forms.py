@@ -36,6 +36,7 @@ class ContributeRatingForm(forms.ModelForm):
     # crowdednessRating = models.IntegerField()
     # timeOfRating = models.DateTimeField()       # doesnt really work for now
 
+
 class ContributeLocationForm(forms.ModelForm):
     class Meta:
         model = Location
