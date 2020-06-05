@@ -9,6 +9,9 @@ from django.urls import reverse
 from django.contrib import messages
 
 from django.core import serializers
+from django.core.serializers.json import DjangoJSONEncoder
+
+# from .serializers import RatingSerializer, LocationSerializer, StudySpotSerializer
 
 # Create your views here.
 
@@ -95,21 +98,18 @@ def mapview(request):
 
 
 def locationjson(request):
-    all_json = serializers.serialize(
-        "json", Location.objects.all())
-    data = {"all_json": all_json}
-    return JsonResponse(data)
+    data = serializers.serialize(
+        "json", Location.objects.all(), cls=DjangoJSONEncoder)
+    return HttpResponse(data, content_type="application/JSON")
 
 
 def studyspotjson(request):
-    all_json = serializers.serialize(
-        "json", StudySpot.objects.all())
-    data = {"all_json": all_json}
-    return JsonResponse(data)
+    data = serializers.serialize(
+        "json", StudySpot.objects.all(), cls=DjangoJSONEncoder)
+    return HttpResponse(data, content_type="application/JSON")
 
 
 def ratingjson(request):
-    all_json = serializers.serialize(
-        "json", Rating.objects.all())
-    data = {"all_json": all_json}
-    return JsonResponse(data)
+    data = serializers.serialize(
+        "json", Rating.objects.all(), cls=DjangoJSONEncoder)
+    return HttpResponse(data, content_type="application/JSON")
