@@ -48,13 +48,14 @@
 
       /* align icon */
       .left-addon .fa {
+        position: absolute;
         left: 0px;
         top: 3px;
       }
 
       /* add padding  */
       .left-addon #myInput {
-        width: auto; /* Full-width */
+        width: -webkit-fill-available; /* Full-width */
         font-size: 14px; /* Increase font-size */
         padding: 6px 20px 6px 29px; /* Add some padding */
         border: 1px solid #ddd; /* Add a grey border */
@@ -69,7 +70,8 @@
         margin: 0;
       }
 
-      #myUL li a {
+      #myUL li button {
+        width: 100%;
         border: 1px solid #ddd; /* Add a border to all links */
         margin-top: -1px; /* Prevent double borders */
         background-color: #f6f6f6; /* Grey background color */
@@ -80,11 +82,29 @@
         display: block; /* Make it into a block element to fill the whole list */
       }
 
-      #myUL li a:hover:not(.header) {
+      #myUL li button:hover:not(.header) {
         background-color: #eee; /* Add a hover effect to all links, except for headers */
       }
     </style>
     <script type="text/javascript">
+      Promise.all([
+        fetch('{% url "sgw:locationjson" %}'),
+        fetch('{% url "sgw:studyspotjson" %}'),
+        fetch('{% url "sgw:ratingjson" %}'),
+      ])
+        .then((responses) => responses.map((response) => response.json()))
+        .then(([x, y, z]) => {
+          x.then(function (p) {
+            y.then(function (q) {
+              z.then(function (r) {
+                console.log(p);
+                console.log(q);
+                console.log(r);
+              });
+            });
+          });
+        });
+
       var dataurl = '{% url "sgw:data" %}';
 
       window.addEventListener("map:init", function (event) {
@@ -101,23 +121,23 @@
           .then(function (data) {
             L.geoJson(data, {
               onEachFeature: function onEachFeature(feature, layer) {
-                var props = feature.properties;            
-                if (props.openingTime == props.closingTime) { 
+                var props = feature.properties;
+                if (props.openingTime == props.closingTime) {
                   var content = `<p>${props.locationName}</p>
-                  <p>Always open</p>`;
+                        <p>Always open</p>`;
                 } else {
                   var content = `<p>${props.locationName}</p>
-                  <p>opening hours: ${props.openingTime} - ${props.closingTime}</p>`;
+                        <p>opening hours: ${props.openingTime} - ${props.closingTime}</p>`;
                 }
                 layer.bindPopup(content);
 
                 /*     layer.on({
-            mouseover: (e) => this.openPopup(),
-              
-            mouseout: (e) => this.closePopup() 
-//           click: do_something //to be implemented
-          });
-      */
+                  mouseover: (e) => this.openPopup(),
+
+                  mouseout: (e) => this.closePopup()
+      //           click: do_something //to be implemented
+                });
+            */
                 layer.on("mouseover", function (e) {
                   this.openPopup();
                 });
@@ -126,7 +146,7 @@
                 });
 
                 layer.on("click", function (e) {
-                  //some function
+                  openLocationPage(props.locationName);
                 });
               },
             }).addTo(map);
@@ -148,60 +168,60 @@
       //default location: L.map("map").setView([1.296894, 103.776387], 16);
 
       /*
-        To include the studyspots:
-        method 1:
-        for each study spot in list:
-        get point lat and lon
-        var lon = "{{ studyspot.geometry.x }}";
-        var lat = "{{ studyspot.geometry.y }}";
-        add marker to map (and check for color):
-        for red: L.marker([lat, lon],{color: 'red',fillColor: '#f03',fillOpacity: 0.5,}).addTo(map);
-        */
+              To include the studyspots:
+              method 1:
+              for each study spot in list:
+              get point lat and lon
+              var lon = "{{ studyspot.geometry.x }}";
+              var lat = "{{ studyspot.geometry.y }}";
+              add marker to map (and check for color):
+              for red: L.marker([lat, lon],{color: 'red',fillColor: '#f03',fillOpacity: 0.5,}).addTo(map);
+              */
       /*
-        method 2:geojson
-        var studyspots = [{
-          "type": "Feature",
-          "properties": { "name": "hssml","crowdedness": "2","show_on_map": true },
-          "geometry": {
-            "type": "Point",
-            "coordinates": [x1,y1]
-          }
-        }, {
-          "type": "Feature",
-          "properties": { "name": "com1 annex","crowdedness": "3","show_on_map": true },
-          "geometry": {
-            "type": "Point",
-            "coordinates": [x2,y2]
-          }
-        }];
+              method 2:geojson
+              var studyspots = [{
+                "type": "Feature",
+                "properties": { "name": "hssml","crowdedness": "2","show_on_map": true },
+                "geometry": {
+                  "type": "Point",
+                  "coordinates": [x1,y1]
+                }
+              }, {
+                "type": "Feature",
+                "properties": { "name": "com1 annex","crowdedness": "3","show_on_map": true },
+                "geometry": {
+                  "type": "Point",
+                  "coordinates": [x2,y2]
+                }
+              }];
 
-        function onEachFeature(feature, layer) {
-          layer.on({
-            mouseover: highlightFeature, //to be implemented
-            mouseout: resetHighlight, //to be implemented
-            click: do_something //to be implemented
-          });
-        }
+              function onEachFeature(feature, layer) {
+                layer.on({
+                  mouseover: highlightFeature, //to be implemented
+                  mouseout: resetHighlight, //to be implemented
+                  click: do_something //to be implemented
+                });
+              }
 
-        L.geoJSON(studyspots, {
-          style: function (feature) {
-            switch (feature.properties.crowdedness) {
-              case '3': return { color: "#ff0000" };
-              case '2': return { color: "#ffff00" };
-              case '1': return { color: "#00ff00" };
-            }
-          },
-          filter: function(feature, layer) {
-            return feature.properties.show_on_map;
-          },
-          onEachFeature: onEachFeature
-        }).addTo(map);      */
+              L.geoJSON(studyspots, {
+                style: function (feature) {
+                  switch (feature.properties.crowdedness) {
+                    case '3': return { color: "#ff0000" };
+                    case '2': return { color: "#ffff00" };
+                    case '1': return { color: "#00ff00" };
+                  }
+                },
+                filter: function(feature, layer) {
+                  return feature.properties.show_on_map;
+                },
+                onEachFeature: onEachFeature
+              }).addTo(map);      */
       //}
 
       //for the search bar
-      function myFunction() {
+      function searchFunction() {
         // Declare variables
-        var input, cleanInput, ul, li, a, i, txtValue;
+        var input, cleanInput, ul, li, button, i, txtValue;
         input = document.getElementById("myInput");
         cleanInput = input.value.toUpperCase();
         ul = document.getElementById("myUL");
@@ -209,14 +229,37 @@
 
         // Loop through all list items, and hide those who don't match the search query
         for (i = 0; i < li.length; i++) {
-          a = li[i].getElementsByTagName("a")[0];
-          txtValue = a.textContent || a.innerText;
+          button = li[i].getElementsByTagName("button")[0];
+          txtValue = button.textContent || button.innerText;
           if (txtValue.toUpperCase().indexOf(cleanInput) > -1) {
             li[i].style.display = "";
           } else {
             li[i].style.display = "none";
           }
         }
+      }
+
+      function openLocationPage(locationName) {
+        L.control.sidebar("sidebar").addTo(map).open("home");
+        ("{% for location in locations %}");
+        if (locationName == "{{location.locationName}}") {
+          var openingtime = "{{location.openingTime}}";
+          var closingtime = "{{location.closingTime}}";
+        }
+        ("{% endfor %}");
+        let studyspots = [];
+        ("{% for studyspot in studyspots %}");
+        if (locationName == "{{studyspot.locationName}}") {
+          studyspots.push("{{studyspot}}");
+        }
+        ("{% endfor %}");
+        console.log(studyspots);
+
+        document.getElementById(
+          "mainInterface"
+        ).innerHTML = `<p>Viewing ${locationName}</p>
+          <p>Operating Time: ${openingtime} - ${closingtime}</p>
+          `;
       }
     </script>
   </head>
@@ -251,26 +294,32 @@
             <input
               type="text"
               id="myInput"
-              onkeyup="myFunction()"
+              onkeyup="searchFunction()"
               placeholder="Search for locations.."
             />
           </div>
-          <ul id="myUL">
-            {% for location in locations%}
-            <li>
-              <a href="#">{{location}}</a>
-              <!--to place actual links or dropdown menus-->
-            </li>
-            {% endfor %}
-          </ul>
+          <div id="mainInterface">
+            <ul id="myUL">
+              {% for location in locations%}
+              <li>
+                <button
+                  type="button"
+                  onclick="openLocationPage('{{location.locationName}}')"
+                >
+                  {{location}}
+                </button>
+                <!--to place actual links or dropdown menus-->
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
           <p>fake copyright here. plus some site links</p>
         </div>
 
         <div class="sidebar-pane" id="favourites">
           <h1 class="sidebar-header">
-            Favourites<span class="sidebar-close"
-              ><i class="fa fa-caret-left"></i
-            ></span>
+            Favourites
+            <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
           </h1>
         </div>
 

@@ -89,27 +89,26 @@ def contributeLocation(request):
 
 def mapview(request):
     context = {
-        "locations": list(Location.objects.all())
+        "locations": list(Location.objects.all()),
+        "studyspots": list(StudySpot.objects.all()),
+        "ratings": list(Rating.objects.all())
     }
     return render(request, "sgw/leaflet.html", context)
 
 
 def locationjson(request):
-    all_json = serializers.serialize(
+    data = serializers.serialize(
         "json", Location.objects.all())
-    data = {"all_json": all_json}
-    return JsonResponse(data)
+    return HttpResponse(data, content_type='application/json')
 
 
 def studyspotjson(request):
-    all_json = serializers.serialize(
+    data = serializers.serialize(
         "json", StudySpot.objects.all())
-    data = {"all_json": all_json}
-    return JsonResponse(data)
+    return HttpResponse(data, content_type='application/json')
 
 
 def ratingjson(request):
-    all_json = serializers.serialize(
+    data = serializers.serialize(
         "json", Rating.objects.all())
-    data = {"all_json": all_json}
-    return JsonResponse(data)
+    return HttpResponse(data, content_type='application/json')
