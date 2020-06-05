@@ -87,7 +87,6 @@
       }
     </style>
     <script type="text/javascript">
-<<<<<<< HEAD
       /*     let locationjson = Promise.resolve(
         fetch('{% url "sgw:locationjson" %}').then((x) => x.json())
       );
@@ -113,7 +112,6 @@
         });
       });
 */
-=======
       Promise.all([
         fetch('{% url "sgw:locationjson" %}'),
         fetch('{% url "sgw:studyspotjson" %}'),
@@ -131,7 +129,6 @@
             });
           });
         });
->>>>>>> fba219aa2560f36a41787470fad67d040c5bc3c8
 
       var dataurl = '{% url "sgw:data" %}';
 
@@ -152,7 +149,6 @@
                 var props = feature.properties;
                 if (props.openingTime == props.closingTime) {
                   var content = `<p>${props.locationName}</p>
-<<<<<<< HEAD
                               <p>Always open</p>`;
                 } else {
                   var content = `<p>${props.locationName}</p>
@@ -160,22 +156,6 @@
                 }
                 layer.bindPopup(content);
 
-=======
-                        <p>Always open</p>`;
-                } else {
-                  var content = `<p>${props.locationName}</p>
-                        <p>opening hours: ${props.openingTime} - ${props.closingTime}</p>`;
-                }
-                layer.bindPopup(content);
-
-                /*     layer.on({
-                  mouseover: (e) => this.openPopup(),
-
-                  mouseout: (e) => this.closePopup()
-      //           click: do_something //to be implemented
-                });
-            */
->>>>>>> fba219aa2560f36a41787470fad67d040c5bc3c8
                 layer.on("mouseover", function (e) {
                   this.openPopup();
                 });
@@ -183,13 +163,9 @@
                   this.closePopup();
                 });
 
-<<<<<<< HEAD
-                layer.on("click", function (e) {});
-=======
                 layer.on("click", function (e) {
                   openLocationPage(props.locationName);
                 });
->>>>>>> fba219aa2560f36a41787470fad67d040c5bc3c8
               },
             }).addTo(map);
           });
@@ -210,7 +186,6 @@
       //default location: L.map("map").setView([1.296894, 103.776387], 16);
 
       /*
-<<<<<<< HEAD
                     To include the studyspots:
                     method 1:
                     for each study spot in list:
@@ -259,56 +234,6 @@
                       },
                       onEachFeature: onEachFeature
                     }).addTo(map);      */
-=======
-              To include the studyspots:
-              method 1:
-              for each study spot in list:
-              get point lat and lon
-              var lon = "{{ studyspot.geometry.x }}";
-              var lat = "{{ studyspot.geometry.y }}";
-              add marker to map (and check for color):
-              for red: L.marker([lat, lon],{color: 'red',fillColor: '#f03',fillOpacity: 0.5,}).addTo(map);
-              */
-      /*
-              method 2:geojson
-              var studyspots = [{
-                "type": "Feature",
-                "properties": { "name": "hssml","crowdedness": "2","show_on_map": true },
-                "geometry": {
-                  "type": "Point",
-                  "coordinates": [x1,y1]
-                }
-              }, {
-                "type": "Feature",
-                "properties": { "name": "com1 annex","crowdedness": "3","show_on_map": true },
-                "geometry": {
-                  "type": "Point",
-                  "coordinates": [x2,y2]
-                }
-              }];
-
-              function onEachFeature(feature, layer) {
-                layer.on({
-                  mouseover: highlightFeature, //to be implemented
-                  mouseout: resetHighlight, //to be implemented
-                  click: do_something //to be implemented
-                });
-              }
-
-              L.geoJSON(studyspots, {
-                style: function (feature) {
-                  switch (feature.properties.crowdedness) {
-                    case '3': return { color: "#ff0000" };
-                    case '2': return { color: "#ffff00" };
-                    case '1': return { color: "#00ff00" };
-                  }
-                },
-                filter: function(feature, layer) {
-                  return feature.properties.show_on_map;
-                },
-                onEachFeature: onEachFeature
-              }).addTo(map);      */
->>>>>>> fba219aa2560f36a41787470fad67d040c5bc3c8
       //}
 
       //for the search bar
@@ -353,6 +278,45 @@
         ).innerHTML = `<p>Viewing ${locationName}</p>
           <p>Operating Time: ${openingtime} - ${closingtime}</p>
           `;
+      }
+
+      function openStudyspotPage(studyspotDesc) {
+        ("{% for studyspot in studyspots %}");
+        if (studyspotDesc == "{{studyspot.description}}") {
+          var aircon = "{{studyspot.airConditioned}}";
+          var dfriendly = "{{studyspot.discussionFriendly}}";
+          var wsocket = "{{studyspot.wallSockets}}";
+        }
+        ("{% endfor %}");
+
+        let ratingArray = [];
+        ("{% for rating in ratings %}");
+        if (studyspotDesc == "{{rating.studyspot.description}}") {
+          ratingArray.push("{{rating}}");
+        }
+        ("{% endfor %}");
+        console.log(ratingArray);
+
+        const heading = document.createElement("h2");
+        const attribs = document.createElement("h3");
+        const ratings = document.createElement("ul");
+
+        heading.innerHTML = `Viewing ${studyspotDesc}`;
+        attribs.innerHTML = `<p>Air-conditioned: ${aircon}</p>
+          <p>Can hold discussions: ${dfriendly}</p>
+          <p>Has wall sockets: ${wsocket}</p>
+          <p>Here are the past contributed crowdedness ratings: </p>`;
+        ratings.innerHTML = ``;
+        ratingArray.forEach((x) => (ratings.innerHTML += `<li> ${x} </li>`));
+
+        console.log(ratings);
+
+        const cleareddoc = document.getElementById("mainInterface");
+
+        cleareddoc.innerHTML = "";
+        cleareddoc.appendChild(heading);
+        cleareddoc.appendChild(attribs);
+        cleareddoc.appendChild(ratings);
       }
     </script>
   </head>

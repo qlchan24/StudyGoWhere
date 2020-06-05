@@ -101,32 +101,17 @@ def mapview(request):
 
 def locationjson(request):
     data = serializers.serialize(
-<<<<<<< HEAD
         "json", Location.objects.all(), cls=DjangoJSONEncoder)
     return HttpResponse(data, content_type="application/JSON")
-=======
-        "json", Location.objects.all())
-    return HttpResponse(data, content_type='application/json')
->>>>>>> fba219aa2560f36a41787470fad67d040c5bc3c8
 
 
 def studyspotjson(request):
     data = serializers.serialize(
-<<<<<<< HEAD
         "json", StudySpot.objects.all(), cls=DjangoJSONEncoder)
     return HttpResponse(data, content_type="application/JSON")
-=======
-        "json", StudySpot.objects.all())
-    return HttpResponse(data, content_type='application/json')
->>>>>>> fba219aa2560f36a41787470fad67d040c5bc3c8
 
 
 def ratingjson(request):
     data = serializers.serialize(
-<<<<<<< HEAD
         "json", Rating.objects.all(), cls=DjangoJSONEncoder)
     return HttpResponse(data, content_type="application/JSON")
-=======
-        "json", Rating.objects.all())
-    return HttpResponse(data, content_type='application/json')
->>>>>>> fba219aa2560f36a41787470fad67d040c5bc3c8
