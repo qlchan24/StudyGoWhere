@@ -63,14 +63,16 @@
         margin-bottom: 8px; /* Add some space below the input */
       }
 
-      #myUL {
+      #myUL,
+      #mainInterface ul {
         /* Remove default list styling */
         list-style-type: none;
         padding: 0;
         margin: 0;
       }
 
-      #myUL li button {
+      #myUL li button,
+      #mainInterface button {
         width: 100%;
         border: 1px solid #ddd; /* Add a border to all links */
         margin-top: -1px; /* Prevent double borders */
@@ -82,7 +84,8 @@
         display: block; /* Make it into a block element to fill the whole list */
       }
 
-      #myUL li button:hover:not(.header) {
+      #myUL li button:hover:not(.header),
+      #mainInterface button:hover:not(.header) {
         background-color: #eee; /* Add a hover effect to all links, except for headers */
       }
     </style>
@@ -241,25 +244,57 @@
 
       function openLocationPage(locationName) {
         L.control.sidebar("sidebar").addTo(map).open("home");
+
         ("{% for location in locations %}");
         if (locationName == "{{location.locationName}}") {
           var openingtime = "{{location.openingTime}}";
           var closingtime = "{{location.closingTime}}";
         }
         ("{% endfor %}");
-        let studyspots = [];
-        ("{% for studyspot in studyspots %}");
-        if (locationName == "{{studyspot.locationName}}") {
-          studyspots.push("{{studyspot}}");
+
+        const doc = document.getElementById("mainInterface");
+        doc.innerHTML = "";
+
+        const name = document.createElement("h2");
+        const timing = document.createElement("h3");
+        const listing = document.createElement("div");
+
+        name.innerHTML = `Viewing ${locationName}`;
+        timing.innerHTML = `Operating Time: ${openingtime} - ${closingtime}`;
+
+        let currentLevel, levelSection, title, studyspotPara, studyspotButton;
+
+        ("{% for studyspot in studyspots|dictsort:'levelNumber' %}");
+        if (locationName == "{{ studyspot.locationName }}") {
+          if (currentLevel != "{{ studyspot.levelNumber }}") {
+            levelSection = document.createElement("section");
+            title = document.createElement("h3");
+            studyspotsOnLevel = document.createElement("ul");
+
+            title.innerHTML = `Level {{studyspot.levelNumber}}`;
+
+            levelSection.appendChild(title);
+            levelSection.appendChild(studyspotsOnLevel);
+            listing.appendChild(levelSection);
+
+            currentLevel = "{{ studyspot.levelNumber }}";
+          }
+
+          studyspotPara = document.createElement("li");
+          studyspotButton = document.createElement("button");
+
+          studyspotButton.innerHTML = "{{ studyspot.description }}";
+          studyspotButton.type = "button";
+          //studyspotButton.onclick = "openLocationPage('{{location.locationName}}')"
+
+          studyspotPara.appendChild(studyspotButton);
+          studyspotsOnLevel.appendChild(studyspotPara);
         }
         ("{% endfor %}");
-        console.log(studyspots);
 
-        document.getElementById(
-          "mainInterface"
-        ).innerHTML = `<p>Viewing ${locationName}</p>
-          <p>Operating Time: ${openingtime} - ${closingtime}</p>
-          `;
+        doc.appendChild(name);
+        doc.appendChild(timing);
+        doc.appendChild(listing);
       }
     </script>
   </head>
