@@ -303,7 +303,10 @@
 
           studyspotButton.innerHTML = "{{ studyspot.description }}";
           studyspotButton.type = "button";
-          //studyspotButton.onclick = "openLocationPage('{{location.locationName}}')"
+          studyspotButton.setAttribute(
+            "onclick",
+            "openStudyspotPage('{{ studyspot.description }}')"
+          );
 
           studyspotPara.appendChild(studyspotButton);
           studyspotsOnLevel.appendChild(studyspotPara);
