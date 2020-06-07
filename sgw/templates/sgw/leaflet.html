@@ -314,9 +314,14 @@
         const doc = document.getElementById("mainInterface");
         doc.innerHTML = "";
 
+        const backButton = document.createElement("button");
         const name = document.createElement("h2");
         const timing = document.createElement("h3");
         const listing = document.createElement("div");
+
+        backButton.innerHTML = "Back to Homepage";
+        backButton.type = "button";
+        backButton.setAttribute("onclick", "openHomePage()");
 
         name.innerHTML = `Viewing ${locationName}`;
         timing.innerHTML = `Operating Time: ${openingtime} - ${closingtime}`;
@@ -355,6 +360,7 @@
         ("{% endfor %}");
 
         doc.appendChild(filterSection);
+        doc.appendChild(backButton);
         doc.appendChild(name);
         doc.appendChild(timing);
         doc.appendChild(listing);
@@ -369,20 +375,26 @@
           var aircon = "{{studyspot.airConditioned}}";
           var dfriendly = "{{studyspot.discussionFriendly}}";
           var wsocket = "{{studyspot.wallSockets}}";
+          var locname = "{{studyspot.locationName.locationName}}";
         }
         ("{% endfor %}");
 
         let ratingArray = [];
         ("{% for rating in ratings %}");
-        if (studyspotDesc == "{{rating.studyspot.description}}") {
+        if (studyspotDesc == `{{rating.studyspot.description}}`) {
           ratingArray.push("{{rating}}");
         }
         ("{% endfor %}");
         console.log(ratingArray);
 
+        const backButton = document.createElement("button");
         const heading = document.createElement("h2");
         const attribs = document.createElement("h3");
         const ratings = document.createElement("ul");
+
+        backButton.innerHTML = `Back to ${locname}`;
+        backButton.type = "button";
+        backButton.setAttribute("onclick", `openLocationPage("${locname}")`);
 
         heading.innerHTML = `Viewing ${studyspotDesc}`;
         attribs.innerHTML = `<p>Air-conditioned: ${aircon}</p>
@@ -397,6 +409,7 @@
         const cleareddoc = document.getElementById("mainInterface");
 
         cleareddoc.innerHTML = "";
+        cleareddoc.appendChild(backButton);
         cleareddoc.appendChild(heading);
         cleareddoc.appendChild(attribs);
         cleareddoc.appendChild(ratings);
