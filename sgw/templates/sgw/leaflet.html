@@ -91,30 +91,30 @@
     </style>
     <script type="text/javascript">
       /*     let locationjson = Promise.resolve(
-        fetch('{% url "sgw:locationjson" %}').then((x) => x.json())
-      );
+              fetch('{% url "sgw:locationjson" %}').then((x) => x.json())
+            );
 
-      let studyspotjson = Promise.resolve(
-        fetch('{% url "sgw:studyspotjson" %}').then((x) => x.json())
-      );
+            let studyspotjson = Promise.resolve(
+              fetch('{% url "sgw:studyspotjson" %}').then((x) => x.json())
+            );
 
-      console.log(locationjson);
-      console.log(studyspotjson);
+            console.log(locationjson);
+            console.log(studyspotjson);
 
-      locationjson.then((x) => {
-        const chosen_id = x.filter((y) => y.fields.locationName == "COM1")[0]
-          .pk;
+            locationjson.then((x) => {
+              const chosen_id = x.filter((y) => y.fields.locationName == "COM1")[0]
+                .pk;
 
-        console.log(chosen_id);
+              console.log(chosen_id);
 
-        studyspotjson.then((x) => {
-          const lol = x
-            .filter((y) => y.fields.locationName == chosen_id)
-            .map((x) => x.fields.description);
-          console.log(lol);
-        });
-      });
-*/
+              studyspotjson.then((x) => {
+                const lol = x
+                  .filter((y) => y.fields.locationName == chosen_id)
+                  .map((x) => x.fields.description);
+                console.log(lol);
+              });
+            });
+      */
       Promise.all([
         fetch('{% url "sgw:locationjson" %}'),
         fetch('{% url "sgw:studyspotjson" %}'),
@@ -136,6 +136,7 @@
       var dataurl = '{% url "sgw:data" %}';
 
       window.addEventListener("map:init", function (event) {
+        openHomePage();
         var map = event.detail.map;
 
         // add sidebar to mapview
@@ -152,10 +153,10 @@
                 var props = feature.properties;
                 if (props.openingTime == props.closingTime) {
                   var content = `<p>${props.locationName}</p>
-                              <p>Always open</p>`;
+                                    <p>Always open</p>`;
                 } else {
                   var content = `<p>${props.locationName}</p>
-                              <p>opening hours: ${props.openingTime} - ${props.closingTime}</p>`;
+                                    <p>opening hours: ${props.openingTime} - ${props.closingTime}</p>`;
                 }
                 layer.bindPopup(content);
 
@@ -189,54 +190,54 @@
       //default location: L.map("map").setView([1.296894, 103.776387], 16);
 
       /*
-                    To include the studyspots:
-                    method 1:
-                    for each study spot in list:
-                    get point lat and lon
-                    var lon = "{{ studyspot.geometry.x }}";
-                    var lat = "{{ studyspot.geometry.y }}";
-                    add marker to map (and check for color):
-                    for red: L.marker([lat, lon],{color: 'red',fillColor: '#f03',fillOpacity: 0.5,}).addTo(map);
-                    */
+                          To include the studyspots:
+                          method 1:
+                          for each study spot in list:
+                          get point lat and lon
+                          var lon = "{{ studyspot.geometry.x }}";
+                          var lat = "{{ studyspot.geometry.y }}";
+                          add marker to map (and check for color):
+                          for red: L.marker([lat, lon],{color: 'red',fillColor: '#f03',fillOpacity: 0.5,}).addTo(map);
+                          */
       /*
-                    method 2:geojson
-                    var studyspots = [{
-                      "type": "Feature",
-                      "properties": { "name": "hssml","crowdedness": "2","show_on_map": true },
-                      "geometry": {
-                        "type": "Point",
-                        "coordinates": [x1,y1]
-                      }
-                    }, {
-                      "type": "Feature",
-                      "properties": { "name": "com1 annex","crowdedness": "3","show_on_map": true },
-                      "geometry": {
-                        "type": "Point",
-                        "coordinates": [x2,y2]
-                      }
-                    }];
+                          method 2:geojson
+                          var studyspots = [{
+                            "type": "Feature",
+                            "properties": { "name": "hssml","crowdedness": "2","show_on_map": true },
+                            "geometry": {
+                              "type": "Point",
+                              "coordinates": [x1,y1]
+                            }
+                          }, {
+                            "type": "Feature",
+                            "properties": { "name": "com1 annex","crowdedness": "3","show_on_map": true },
+                            "geometry": {
+                              "type": "Point",
+                              "coordinates": [x2,y2]
+                            }
+                          }];
 
-                    function onEachFeature(feature, layer) {
-                      layer.on({
-                        mouseover: highlightFeature, //to be implemented
-                        mouseout: resetHighlight, //to be implemented
-                        click: do_something //to be implemented
-                      });
-                    }
+                          function onEachFeature(feature, layer) {
+                            layer.on({
+                              mouseover: highlightFeature, //to be implemented
+                              mouseout: resetHighlight, //to be implemented
+                              click: do_something //to be implemented
+                            });
+                          }
 
-                    L.geoJSON(studyspots, {
-                      style: function (feature) {
-                        switch (feature.properties.crowdedness) {
-                          case '3': return { color: "#ff0000" };
-                          case '2': return { color: "#ffff00" };
-                          case '1': return { color: "#00ff00" };
-                        }
-                      },
-                      filter: function(feature, layer) {
-                        return feature.properties.show_on_map;
-                      },
-                      onEachFeature: onEachFeature
-                    }).addTo(map);      */
+                          L.geoJSON(studyspots, {
+                            style: function (feature) {
+                              switch (feature.properties.crowdedness) {
+                                case '3': return { color: "#ff0000" };
+                                case '2': return { color: "#ffff00" };
+                                case '1': return { color: "#00ff00" };
+                              }
+                            },
+                            filter: function(feature, layer) {
+                              return feature.properties.show_on_map;
+                            },
+                            onEachFeature: onEachFeature
+                          }).addTo(map);      */
       //}
 
       //for the search bar
@@ -260,6 +261,46 @@
         }
       }
 
+      const filterSection = document.createElement("div");
+      filterSection.innerHTML = `<input
+                      type="checkbox"
+                      id="ac"
+                      value="Bike"
+                      onclick="checkboxfn()"
+                    />
+                    <label for="ac"> Air-conditioned</label><br />
+                    <input type="checkbox" id="df" value="Car" />
+                    <label for="df"> Discussion friendly</label><br />
+                    <input type="checkbox" id="ws" value="Boat" />
+                    <label for="ws"> Have wall sockets</label><br /><br />`;
+
+      function openHomePage() {
+        L.control.sidebar("sidebar").addTo(map).open("home");
+        const doc = document.getElementById("mainInterface");
+        doc.innerHTML = "";
+
+        const ul = document.createElement("ul");
+
+        ul.id = "myUL";
+
+        ul.innerHTML = `
+                {% for location in locations%}
+                <li>
+                  <button
+                    type="button"
+                    onclick="openLocationPage('{{location.locationName}}')"
+                  >
+                    {{location}}
+                  </button>
+                  <!--to place actual links or dropdown menus-->
+                </li>
+                {% endfor %}
+              `;
+
+        doc.appendChild(filterSection);
+        doc.appendChild(ul);
+      }
+
       function openLocationPage(locationName) {
         L.control.sidebar("sidebar").addTo(map).open("home");
 
@@ -270,7 +311,7 @@
         }
         ("{% endfor %}");
 
-        const doc = document.getElementById("mainContent");
+        const doc = document.getElementById("mainInterface");
         doc.innerHTML = "";
 
         const name = document.createElement("h2");
@@ -313,9 +354,13 @@
         }
         ("{% endfor %}");
 
+        doc.appendChild(filterSection);
         doc.appendChild(name);
         doc.appendChild(timing);
         doc.appendChild(listing);
+
+        const checkbox = document.getElementById("ac").checked;
+        console.log(checkbox);
       }
 
       function openStudyspotPage(studyspotDesc) {
@@ -341,9 +386,9 @@
 
         heading.innerHTML = `Viewing ${studyspotDesc}`;
         attribs.innerHTML = `<p>Air-conditioned: ${aircon}</p>
-          <p>Can hold discussions: ${dfriendly}</p>
-          <p>Has wall sockets: ${wsocket}</p>
-          <p>Here are the past contributed crowdedness ratings: </p>`;
+                <p>Can hold discussions: ${dfriendly}</p>
+                <p>Has wall sockets: ${wsocket}</p>
+                <p>Here are the past contributed crowdedness ratings: </p>`;
         ratings.innerHTML = ``;
         ratingArray.forEach((x) => (ratings.innerHTML += `<li> ${x} </li>`));
 
@@ -393,26 +438,7 @@
               placeholder="Search for locations.."
             />
           </div>
-          <div id="mainInterface">
-            <div id="filter">
-              <h2>Filter goes here</h2>
-            </div>
-            <div id="mainContent">
-              <ul id="myUL">
-                {% for location in locations%}
-                <li>
-                  <button
-                    type="button"
-                    onclick="openLocationPage('{{location.locationName}}')"
-                  >
-                    {{location}}
-                  </button>
-                  <!--to place actual links or dropdown menus-->
-                </li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
+          <div id="mainInterface"></div>
           <p>fake copyright here. plus some site links</p>
         </div>
 
