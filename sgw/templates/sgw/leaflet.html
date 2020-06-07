@@ -270,7 +270,7 @@
         }
         ("{% endfor %}");
 
-        const doc = document.getElementById("mainInterface");
+        const doc = document.getElementById("mainContent");
         doc.innerHTML = "";
 
         const name = document.createElement("h2");
@@ -394,19 +394,24 @@
             />
           </div>
           <div id="mainInterface">
-            <ul id="myUL">
-              {% for location in locations%}
-              <li>
-                <button
-                  type="button"
-                  onclick="openLocationPage('{{location.locationName}}')"
-                >
-                  {{location}}
-                </button>
-                <!--to place actual links or dropdown menus-->
-              </li>
-              {% endfor %}
-            </ul>
+            <div id="filter">
+              <h2>Filter goes here</h2>
+            </div>
+            <div id="mainContent">
+              <ul id="myUL">
+                {% for location in locations%}
+                <li>
+                  <button
+                    type="button"
+                    onclick="openLocationPage('{{location.locationName}}')"
+                  >
+                    {{location}}
+                  </button>
+                  <!--to place actual links or dropdown menus-->
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
           </div>
           <p>fake copyright here. plus some site links</p>
         </div>
