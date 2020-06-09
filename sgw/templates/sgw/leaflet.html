@@ -261,47 +261,88 @@
         }
       }
 
+      function ssfilter() {
+        const arr = [];
+        ("{% for studyspot in studyspots %}");
+        if (
+          (document.getElementById("ac").checked == true
+            ? "{{ studyspot.airConditioned }}" === "True"
+            : true) &&
+          (document.getElementById("ws").checked == true
+            ? "{{ studyspot.wallSockets }}" === "True"
+            : true) &&
+          (document.getElementById("df").checked == true
+            ? "{{ studyspot.discussionFriendly }}" === "True"
+            : true)
+        ) {
+          arr.push("{{studyspot.description}}");
+        }
+        ("{% endfor %}");
+        return arr;
+      }
+
+      let currentPage;
       const filterSection = document.createElement("div");
       filterSection.innerHTML = `<input
                       type="checkbox"
                       id="ac"
                       value="Bike"
-                      onclick="checkboxfn()"
+                      onclick="displayPage()"
                     />
                     <label for="ac"> Air-conditioned</label><br />
-                    <input type="checkbox" id="df" value="Car" />
+                    <input type="checkbox" id="df" value="Car" onclick="displayPage()" />
                     <label for="df"> Discussion friendly</label><br />
-                    <input type="checkbox" id="ws" value="Boat" />
+                    <input type="checkbox" id="ws" value="Boat" onclick="displayPage()" />
                     <label for="ws"> Have wall sockets</label><br /><br />`;
 
+      function displayPage() {
+        if (currentPage == "home") {
+          openHomePage();
+        } else {
+          openLocationPage(currentPage);
+        }
+      }
+
       function openHomePage() {
+        currentPage = "home";
         L.control.sidebar("sidebar").addTo(map).open("home");
         const doc = document.getElementById("mainInterface");
         doc.innerHTML = "";
+        doc.appendChild(filterSection);
 
         const ul = document.createElement("ul");
 
         ul.id = "myUL";
+        const studyspotarr = ssfilter();
+        const locationset = new Set();
 
-        ul.innerHTML = `
-                {% for location in locations%}
-                <li>
-                  <button
-                    type="button"
-                    onclick="openLocationPage('{{location.locationName}}')"
-                  >
-                    {{location}}
-                  </button>
-                  <!--to place actual links or dropdown menus-->
-                </li>
-                {% endfor %}
-              `;
+        ("{% for studyspot in studyspots%}");
+        if (studyspotarr.includes("{{studyspot.description}}")) {
+          locationset.add("{{studyspot.locationName}}");
+        }
+        ("{% endfor %}");
+        console.log(locationset);
 
-        doc.appendChild(filterSection);
+        locationset.forEach((location) => {
+          console.log(location);
+          const locationPara = document.createElement("li");
+          const locationButton = document.createElement("button");
+
+          locationButton.textContent = location;
+          locationButton.type = "button";
+          locationButton.setAttribute(
+            "onclick",
+            `openLocationPage("${location}")`
+          );
+          locationPara.appendChild(locationButton);
+          ul.appendChild(locationPara);
+        });
+
         doc.appendChild(ul);
       }
 
       function openLocationPage(locationName) {
+        currentPage = locationName;
         L.control.sidebar("sidebar").addTo(map).open("home");
 
         ("{% for location in locations %}");
@@ -313,6 +354,7 @@
 
         const doc = document.getElementById("mainInterface");
         doc.innerHTML = "";
+        doc.appendChild(filterSection);
 
         const backButton = document.createElement("button");
         const name = document.createElement("h2");
@@ -327,46 +369,45 @@
         timing.innerHTML = `Operating Time: ${openingtime} - ${closingtime}`;
 
         let currentLevel, levelSection, title, studyspotPara, studyspotButton;
-
+        const arr = ssfilter();
+        console.log(arr);
         ("{% for studyspot in studyspots|dictsort:'levelNumber' %}");
         if (locationName == "{{ studyspot.locationName }}") {
-          if (currentLevel != "{{ studyspot.levelNumber }}") {
-            levelSection = document.createElement("section");
-            title = document.createElement("h3");
-            studyspotsOnLevel = document.createElement("ul");
+          if (arr.includes("{{studyspot.description}}")) {
+            if (currentLevel != "{{ studyspot.levelNumber }}") {
+              levelSection = document.createElement("section");
+              title = document.createElement("h3");
+              studyspotsOnLevel = document.createElement("ul");
 
-            title.innerHTML = `Level {{studyspot.levelNumber}}`;
+              title.innerHTML = `Level {{studyspot.levelNumber}}`;
 
-            levelSection.appendChild(title);
-            levelSection.appendChild(studyspotsOnLevel);
-            listing.appendChild(levelSection);
+              levelSection.appendChild(title);
+              levelSection.appendChild(studyspotsOnLevel);
+              listing.appendChild(levelSection);
 
-            currentLevel = "{{ studyspot.levelNumber }}";
+              currentLevel = "{{ studyspot.levelNumber }}";
+            }
+
+            studyspotPara = document.createElement("li");
+            studyspotButton = document.createElement("button");
+
+            studyspotButton.innerHTML = "{{ studyspot.description }}";
+            studyspotButton.type = "button";
+            studyspotButton.setAttribute(
+              "onclick",
+              "openStudyspotPage('{{ studyspot.description }}')"
+            );
+
+            studyspotPara.appendChild(studyspotButton);
+            studyspotsOnLevel.appendChild(studyspotPara);
           }
-
-          studyspotPara = document.createElement("li");
-          studyspotButton = document.createElement("button");
-
-          studyspotButton.innerHTML = "{{ studyspot.description }}";
-          studyspotButton.type = "button";
-          studyspotButton.setAttribute(
-            "onclick",
-            "openStudyspotPage('{{ studyspot.description }}')"
-          );
-
-          studyspotPara.appendChild(studyspotButton);
-          studyspotsOnLevel.appendChild(studyspotPara);
         }
         ("{% endfor %}");
 
-        doc.appendChild(filterSection);
         doc.appendChild(backButton);
         doc.appendChild(name);
         doc.appendChild(timing);
         doc.appendChild(listing);
-
-        const checkbox = document.getElementById("ac").checked;
-        console.log(checkbox);
       }
 
       function openStudyspotPage(studyspotDesc) {
