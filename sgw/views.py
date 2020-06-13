@@ -115,3 +115,18 @@ def ratingjson(request):
     data = serializers.serialize(
         "json", Rating.objects.all(), cls=DjangoJSONEncoder)
     return HttpResponse(data, content_type="application/JSON")
+
+
+def ratingform(request):
+    if request.method == 'POST':
+        value = request.POST['value']
+        ssname = request.POST['ssname']
+
+        print(value)
+        print(ssname)
+
+        Rating.objects.create(
+            crowdedness=value,
+            studyspot=StudySpot.objects.get(description=ssname)
+        )
+    return HttpResponse('')

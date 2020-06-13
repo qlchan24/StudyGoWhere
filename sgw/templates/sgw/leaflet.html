@@ -115,6 +115,7 @@
               });
             });
       */
+
       Promise.all([
         fetch('{% url "sgw:locationjson" %}'),
         fetch('{% url "sgw:studyspotjson" %}'),
@@ -410,6 +411,24 @@
         doc.appendChild(listing);
       }
 
+      function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          var cookies = document.cookie.split(";");
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
       function openStudyspotPage(studyspotDesc) {
         ("{% for studyspot in studyspots %}");
         if (studyspotDesc == "{{studyspot.description}}") {
@@ -417,21 +436,30 @@
           var dfriendly = "{{studyspot.discussionFriendly}}";
           var wsocket = "{{studyspot.wallSockets}}";
           var locname = "{{studyspot.locationName.locationName}}";
+          var pkno = "{{studyspot.pk}}";
         }
         ("{% endfor %}");
 
-        let ratingArray = [];
-        ("{% for rating in ratings %}");
-        if (studyspotDesc == `{{rating.studyspot.description}}`) {
-          ratingArray.push("{{rating}}");
-        }
-        ("{% endfor %}");
-        console.log(ratingArray);
+        const ratings = document.createElement("ul");
+        ratings.innerHTML = ``;
+
+        let ratingjson = fetch('{% url "sgw:ratingjson" %}')
+          .then((x) => x.json())
+          .then((x) => {
+            const lol = x.filter((y) => y.fields.studyspot == pkno);
+            lol.forEach((x) => {
+              console.log(x);
+              ratings.innerHTML += `<li> ${x.fields.crowdedness}%, ${x.fields.whenRated} </li>`;
+            });
+            // console.log(lol);
+          });
+        // console.log(ratingArray);
 
         const backButton = document.createElement("button");
         const heading = document.createElement("h2");
         const attribs = document.createElement("h3");
-        const ratings = document.createElement("ul");
+
+        const rform = document.createElement("form");
 
         backButton.innerHTML = `Back to ${locname}`;
         backButton.type = "button";
@@ -442,8 +470,15 @@
                 <p>Can hold discussions: ${dfriendly}</p>
                 <p>Has wall sockets: ${wsocket}</p>
                 <p>Here are the past contributed crowdedness ratings: </p>`;
-        ratings.innerHTML = ``;
-        ratingArray.forEach((x) => (ratings.innerHTML += `<li> ${x} </li>`));
+
+        // lol.forEach((x) => (ratings.innerHTML += `<li> ${x} </li>`));
+
+        rform.id = "rform";
+        rform.innerHTML = `{%csrf_token%}
+        <label for = 'value'> Gauge the crowdedness of this place: </label>
+        <input type = 'number' id = 'value'><br><br>
+        <input type="submit" value="Submit">
+        `;
 
         console.log(ratings);
 
@@ -454,6 +489,36 @@
         cleareddoc.appendChild(heading);
         cleareddoc.appendChild(attribs);
         cleareddoc.appendChild(ratings);
+        cleareddoc.appendChild(rform);
+
+        document
+          .getElementById("rform")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            var formData = new FormData();
+            var valueField = document.getElementById("value").value;
+
+            let headers = new Headers();
+            const csrftoken = getCookie("csrftoken");
+            headers.append("X-CSRFToken", csrftoken);
+
+            formData.append("value", valueField);
+            formData.append("ssname", `${studyspotDesc}`);
+            formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+            fetch('{% url "sgw:ratingform" %}', {
+              method: "POST",
+              body: formData,
+              headers: headers,
+              credentials: "same-origin",
+            })
+              // .then((response) => response.json())
+              .catch((error) => console.error("Error:", error))
+              .then((response) => console.log("Success:", response));
+
+            openStudyspotPage(studyspotDesc);
+          });
       }
     </script>
   </head>

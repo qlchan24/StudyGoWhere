@@ -20,6 +20,7 @@ urlpatterns = [
     path("location.json", views.locationjson, name="locationjson"),
     path("rating.json", views.ratingjson, name="ratingjson"),
     path("studyspot.json", views.studyspotjson, name="studyspotjson"),
+    path("ratingform", views.ratingform, name="ratingform"),
     re_path(r'^data.geojson$', GeoJSONLayerView.as_view(model=Location,
                                                         properties=('locationName', 'geom', 'openingTime', 'closingTime')), name="data"),
 ]
