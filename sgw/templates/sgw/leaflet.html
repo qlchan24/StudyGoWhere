@@ -13,7 +13,7 @@
       rel="stylesheet"
     />
     {% leaflet_css %} {% leaflet_js %}
-
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
     <!-- for sidebar css file -->
     {% load static %}
     <link
@@ -442,24 +442,61 @@
 
         const ratings = document.createElement("ul");
         ratings.innerHTML = ``;
-
         let ratingjson = fetch('{% url "sgw:ratingjson" %}')
           .then((x) => x.json())
           .then((x) => {
+            const ratingArray = [];
             const lol = x.filter((y) => y.fields.studyspot == pkno);
             lol.forEach((x) => {
               console.log(x);
               ratings.innerHTML += `<li> ${x.fields.crowdedness}%, ${x.fields.whenRated} </li>`;
+              ratingArray.push(x);
             });
-            // console.log(lol);
+            ratingDict = {};
+            for (let time = 9; time < 21; time += 1) {
+              const arr = [];
+              ratingArray.forEach((rating) => {
+                if (
+                  time ===
+                  parseInt(rating.fields.whenRated.slice(11, 13)) + 8
+                ) {
+                  arr.push(rating.fields.crowdedness);
+                }
+              });
+              const avgvalue = arr.reduce((a, b) => a + b, 0) / arr.length;
+              ratingDict[`${time}:00`] = avgvalue;
+            }
+            console.log(ratingDict);
+            dataPoints = [];
+            var chart = new CanvasJS.Chart("chartContainer", {
+              title: {
+                text: "Crowdedness",
+                fontFamily: "Helvetica Neue",
+              },
+              data: [
+                {
+                  type: "column",
+                  dataPoints: dataPoints,
+                },
+              ],
+              axisY: {
+                maximum: 100,
+                minimum: 0,
+              },
+            });
+            for (var time in ratingDict) {
+              dataPoints.push({ label: time, y: ratingDict[time] });
+            }
+            chart.render();
           });
-        // console.log(ratingArray);
 
         const backButton = document.createElement("button");
         const heading = document.createElement("h2");
         const attribs = document.createElement("h3");
-
+        const graphdiv = document.createElement("div");
         const rform = document.createElement("form");
+        graphdiv.id = "chartContainer";
+        graphdiv.style = "height: 300px; width: 100%;";
 
         backButton.innerHTML = `Back to ${locname}`;
         backButton.type = "button";
@@ -476,7 +513,7 @@
         rform.id = "rform";
         rform.innerHTML = `{%csrf_token%}
         <label for = 'value'> Gauge the crowdedness of this place: </label>
-        <input type = 'number' id = 'value'><br><br>
+        <input type="range" min="1" max="100" value="50" class="slider" id="myRange"><br><br>
         <input type="submit" value="Submit">
         `;
 
@@ -489,6 +526,7 @@
         cleareddoc.appendChild(heading);
         cleareddoc.appendChild(attribs);
         cleareddoc.appendChild(ratings);
+        cleareddoc.appendChild(graphdiv);
         cleareddoc.appendChild(rform);
 
         document
@@ -497,7 +535,7 @@
             e.preventDefault();
 
             var formData = new FormData();
-            var valueField = document.getElementById("value").value;
+            var valueField = document.getElementById("myRange").value;
 
             let headers = new Headers();
             const csrftoken = getCookie("csrftoken");
@@ -515,9 +553,10 @@
             })
               // .then((response) => response.json())
               .catch((error) => console.error("Error:", error))
-              .then((response) => console.log("Success:", response));
-
-            openStudyspotPage(studyspotDesc);
+              .then((response) => {
+                console.log("Success:", response);
+                openStudyspotPage(studyspotDesc);
+              });
           });
       }
     </script>

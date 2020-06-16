@@ -114,6 +114,8 @@ def studyspotjson(request):
 def ratingjson(request):
     data = serializers.serialize(
         "json", Rating.objects.all(), cls=DjangoJSONEncoder)
+    print("producing json file")
+    print(data)
     return HttpResponse(data, content_type="application/JSON")
 
 
@@ -122,11 +124,11 @@ def ratingform(request):
         value = request.POST['value']
         ssname = request.POST['ssname']
 
-        print(value)
-        print(ssname)
+        print("creating new rating: "+value)
 
         Rating.objects.create(
             crowdedness=value,
             studyspot=StudySpot.objects.get(description=ssname)
         )
+        print(Rating.objects.all)
     return HttpResponse('')
