@@ -84,9 +84,28 @@
         display: block; /* Make it into a block element to fill the whole list */
       }
 
+      #mainInterface .studyspotbutton {
+        width: auto;
+        overflow: auto;
+        border: 1px solid #ddd; /* Add a border to all links */
+        margin-top: -1px; /* Prevent double borders */
+        background-color: #f6f6f6; /* Grey background color */
+        padding: 6px; /* Add some padding */
+        text-decoration: none; /* Remove default text underline */
+        font-size: 14px; /* Increase the font-size */
+        color: black; /* Add a black text color */
+        display: block; /* Make it into a block element to fill the whole list */
+      }
+
       #myUL li button:hover:not(.header),
-      #mainInterface button:hover:not(.header) {
+      #mainInterface button:hover:not(.header),
+      #mainInterface .studyspotbutton:hover:not(.header) {
         background-color: #eee; /* Add a hover effect to all links, except for headers */
+      }
+
+      .photo {
+        float: right;
+        width: 30%;
       }
     </style>
     <script type="text/javascript">
@@ -390,16 +409,27 @@
             }
 
             studyspotPara = document.createElement("li");
-            studyspotButton = document.createElement("button");
+            studyspotImage = document.createElement("img");
+            studyspottext = document.createElement("p");
+            //studyspotButton = document.createElement("button");
+            //studyspotPara.innerHTML = "{{ studyspot.description }}";
 
-            studyspotButton.innerHTML = "{{ studyspot.description }}";
-            studyspotButton.type = "button";
-            studyspotButton.setAttribute(
+            studyspotPara.classList.add("studyspotbutton");
+            studyspotImage.classList.add("photo");
+            studyspotImage.src = "{{studyspot.image.url}}";
+            studyspotImage.alt = "studyspot_image.jpg";
+
+            // studyspotButton.innerHTML = "{{ studyspot.description }}";
+            // studyspotButton.type = "button";
+            studyspotPara.setAttribute(
               "onclick",
               "openStudyspotPage('{{ studyspot.description }}')"
             );
+            studyspottext.innerHTML = "{{ studyspot.description }}";
+            studyspotPara.appendChild(studyspotImage);
+            studyspotPara.appendChild(studyspottext);
 
-            studyspotPara.appendChild(studyspotButton);
+            //studyspotPara.appendChild(studyspotButton);
             studyspotsOnLevel.appendChild(studyspotPara);
           }
         }

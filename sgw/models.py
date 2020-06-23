@@ -11,6 +11,7 @@ class Location(models.Model):
     openingTime = models.TimeField(default='20:00')
     closingTime = models.TimeField(default='20:00')
     geom = PointField()
+    image = models.ImageField(upload_to='location')
 
     def __str__(self):
         return self.locationName
@@ -26,6 +27,7 @@ class StudySpot(models.Model):
         choices=BOOL_CHOICES, blank=False, null=True, default=None)
     levelNumber = models.IntegerField()
     locationName = models.ForeignKey(Location, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='studyspot')
 
     def __str__(self):
         return f"{self.locationName} -> Level {self.levelNumber} -> {self.description}"
