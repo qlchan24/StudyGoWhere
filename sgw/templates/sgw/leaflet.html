@@ -32,18 +32,29 @@
         width: 100vw;
         font: 10pt "Helvetica Neue", Arial, Helvetica, sans-serif;
       }
-      /*for search bar*/
 
+      /*for blue header*/
+      div .sidebar-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      /*for search bar*/
       /* enable absolute positioning */
       .inner-addon {
-        position: relative;
+        position: sticky;
+        top: 40px;
+        background-color: white;
+        z-index: 100;
       }
 
       /* style icon */
       .inner-addon .fa {
-        position: absolute;
+        position: relative;
         padding: 10px;
         pointer-events: none;
+        z-index: 100;
       }
 
       /* align icon */
@@ -51,6 +62,56 @@
         position: absolute;
         left: 0px;
         top: 3px;
+        z-index: 100;
+      }
+
+      /*for filter section*/
+      div .fs {
+        position: sticky;
+        top: 82px;
+        background-color: white;
+        z-index: 100;
+      }
+
+      /*for back buttons*/
+      #backHome {
+        position: sticky;
+        top: 153px;
+        z-index: 100;
+        background-color: white;
+      }
+
+      #backLocation {
+        position: sticky;
+        top: 80px;
+        z-index: 100;
+        background-color: white;
+      }
+
+      h2 {
+        position: sticky;
+        top: 200px;
+        background-color: white;
+        z-index: 100;
+      }
+
+      h3 {
+        position: sticky;
+        top: 222px;
+        background-color: white;
+      }
+
+      h2.ss {
+        position: sticky;
+        top: 127px;
+        background-color: white;
+        z-index: 100;
+      }
+
+      h3.ss {
+        position: sticky;
+        top: 149px;
+        background-color: white;
       }
 
       /* add padding  */
@@ -307,6 +368,7 @@
 
       let currentPage;
       const filterSection = document.createElement("div");
+      filterSection.className = "fs";
       filterSection.innerHTML = `<input
                       type="checkbox"
                       id="ac"
@@ -385,11 +447,14 @@
         const timing = document.createElement("h3");
         const listing = document.createElement("div");
 
+        backButton.id = "backHome";
         backButton.innerHTML = "Back to Homepage";
         backButton.type = "button";
         backButton.setAttribute("onclick", "openHomePage()");
 
+        name.className = "location";
         name.innerHTML = `Viewing ${locationName}`;
+        timing.className = "location";
         timing.innerHTML = `Operating Time: ${openingtime} - ${closingtime}`;
 
         let currentLevel, levelSection, title, studyspotPara, studyspotButton;
@@ -532,11 +597,14 @@
         graphdiv.id = "chartContainer";
         graphdiv.style = "height: 300px; width: 100%;";
 
+        backButton.id = "backLocation";
         backButton.innerHTML = `Back to ${locname}`;
         backButton.type = "button";
         backButton.setAttribute("onclick", `openLocationPage("${locname}")`);
 
+        heading.className = "ss";
         heading.innerHTML = `Viewing ${studyspotDesc}`;
+        attribs.className = "ss";
         attribs.innerHTML = `<p>Air-conditioned: ${aircon}</p>
                 <p>Can hold discussions: ${dfriendly}</p>
                 <p>Has wall sockets: ${wsocket}</p>
