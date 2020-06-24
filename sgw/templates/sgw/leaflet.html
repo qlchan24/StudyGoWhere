@@ -101,6 +101,19 @@
         background-color: white;
       }
 
+      h2.ss {
+        position: sticky;
+        top: 127px;
+        background-color: white;
+        z-index: 100;
+      }
+
+      h3.ss {
+        position: sticky;
+        top: 149px;
+        background-color: white;
+      }
+
       /* add padding  */
       .left-addon #myInput {
         width: -webkit-fill-available; /* Full-width */
@@ -585,7 +598,9 @@
         backButton.type = "button";
         backButton.setAttribute("onclick", `openLocationPage("${locname}")`);
 
+        heading.className = "ss";
         heading.innerHTML = `Viewing ${studyspotDesc}`;
+        attribs.className = "ss";
         attribs.innerHTML = `<p>Air-conditioned: ${aircon}</p>
                 <p>Can hold discussions: ${dfriendly}</p>
                 <p>Has wall sockets: ${wsocket}</p>
