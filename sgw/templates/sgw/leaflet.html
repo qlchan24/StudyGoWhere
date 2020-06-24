@@ -107,6 +107,10 @@
         float: right;
         width: 30%;
       }
+
+      #mainInterface .studyspotbutton div {
+        margin: auto;
+      }
     </style>
     <script type="text/javascript">
       /*     let locationjson = Promise.resolve(
@@ -410,7 +414,7 @@
 
             studyspotPara = document.createElement("li");
             studyspotImage = document.createElement("img");
-            studyspottext = document.createElement("p");
+            studyspottext = document.createElement("div");
             //studyspotButton = document.createElement("button");
             //studyspotPara.innerHTML = "{{ studyspot.description }}";
 
@@ -561,6 +565,46 @@
 
         document
           .getElementById("rform")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            var formData = new FormData();
+            var valueField = document.getElementById("myRange").value;
+
+            let headers = new Headers();
+            const csrftoken = getCookie("csrftoken");
+            headers.append("X-CSRFToken", csrftoken);
+
+            formData.append("value", valueField);
+            formData.append("ssname", `${studyspotDesc}`);
+            formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+            fetch('{% url "sgw:ratingform" %}', {
+              method: "POST",
+              body: formData,
+              headers: headers,
+              credentials: "same-origin",
+            })
+              // .then((response) => response.json())
+              .catch((error) => console.error("Error:", error))
+              .then((response) => {
+                console.log("Success:", response);
+                openStudyspotPage(studyspotDesc);
+              });
+          });
+      }
+      function openStudySpotContrib() {
+        const cleareddoc = document.getElementById("mainInterface");
+        cleareddoc.innerHTML = "";
+        const contribform = document.createElement("form");
+        contribform.id = "contribform";
+        contribform.innerHTML = `{%csrf_token%}
+        <label for = 'value'> Gauge the crowdedness of this place: </label>
+        <input type="range" min="1" max="100" value="50" class="slider" id="myRange"><br><br>
+        <input type="submit" value="Submit">
+        `;
+        document
+          .getElementById("contribform")
           .addEventListener("submit", function (e) {
             e.preventDefault();
 

@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from django.db import models
-from .models import StudySpot, Rating, Location
+from .models import StudySpot, Rating, Location, StudySpotContrib
 
 
 class ContributeStudySpotForm(forms.ModelForm):
@@ -41,3 +41,23 @@ class ContributeLocationForm(forms.ModelForm):
     class Meta:
         model = Location
         fields = '__all__'
+
+
+class StudySpotContribForm(forms.ModelForm):
+    class Meta:
+        model = StudySpotContrib
+        fields = '__all__'  # remove user and geom
+        widgets = {'airConditioned': forms.RadioSelect,
+                   'discussionFriendly': forms.RadioSelect,
+                   'wallSockets': forms.RadioSelect
+                   }
+        labels = {
+            "studyspotname": "Name of the place",
+            "levelNumber": "Level number",
+            "openingTime": "Opening time (skip if unsure or not applicable)",
+            "closingTime": "Closing time (skip if unsure or not applicable)",
+            "airConditioned": "Is the place Air-Conditioned",
+            "discussionFriendly": "Is the place discussion friendly",
+            "wallSockets": "Are there wall sockets that can be used",
+            "image": "Please upload a square image of the place",
+        }

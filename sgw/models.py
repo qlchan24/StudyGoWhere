@@ -40,3 +40,19 @@ class Rating(models.Model):
 
     def __str__(self):
         return f"{self.crowdedness}% ({self.whenRated})"
+
+
+class StudySpotContrib(models.Model):
+    user = models.CharField(max_length=100)
+    openingTime = models.TimeField(default='20:00')
+    closingTime = models.TimeField(default='20:00')
+    image = models.ImageField(upload_to='studyspot')
+    geom = PointField()
+    studyspotname = models.CharField(max_length=100)
+    levelNumber = models.IntegerField()
+    airConditioned = models.BooleanField(
+        choices=BOOL_CHOICES, blank=False, null=True, default=None)
+    discussionFriendly = models.BooleanField(
+        choices=BOOL_CHOICES, blank=False, null=True, default=None)
+    wallSockets = models.BooleanField(
+        choices=BOOL_CHOICES, blank=False, null=True, default=None)
