@@ -46,7 +46,7 @@ class ContributeLocationForm(forms.ModelForm):
 class StudySpotContribForm(forms.ModelForm):
     class Meta:
         model = StudySpotContrib
-        fields = '__all__'  # remove user and geom
+        fields = '__all__'  # user and geom to be manipulated before saving to form
         widgets = {'airConditioned': forms.RadioSelect,
                    'discussionFriendly': forms.RadioSelect,
                    'wallSockets': forms.RadioSelect

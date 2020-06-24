@@ -667,39 +667,70 @@
         const contribform = document.createElement("form");
         contribform.id = "contribform";
         contribform.innerHTML = `{%csrf_token%}
-        <label for = 'value'> Gauge the crowdedness of this place: </label>
-        <input type="range" min="1" max="100" value="50" class="slider" id="myRange"><br><br>
+        <table>
+          {{ form.as_p }}
+        </table>
         <input type="submit" value="Submit">
         `;
-        document
-          .getElementById("contribform")
-          .addEventListener("submit", function (e) {
-            e.preventDefault();
 
-            var formData = new FormData();
-            var valueField = document.getElementById("myRange").value;
+        cleareddoc.appendChild(contribform);
+        var labels = document.getElementsByTagName("LABEL");
+        for (var i = 0; i < labels.length; i++) {
+          if (
+            labels[i].htmlFor == "id_user" ||
+            labels[i].htmlFor == "id_geom"
+          ) {
+            labels[i].parentNode.removeChild(labels[i]);
+          }
+        }
+        var userqn = document.getElementById("id_user");
+        userqn.parentNode.removeChild(userqn);
+        var geomqn = document.getElementById("id_geom");
+        geomqn.parentNode.removeChild(geomqn);
+        // to insert back button and functionality for saving location
 
-            let headers = new Headers();
-            const csrftoken = getCookie("csrftoken");
-            headers.append("X-CSRFToken", csrftoken);
-
-            formData.append("value", valueField);
-            formData.append("ssname", `${studyspotDesc}`);
-            formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
-
-            fetch('{% url "sgw:ratingform" %}', {
-              method: "POST",
-              body: formData,
-              headers: headers,
-              credentials: "same-origin",
-            })
-              // .then((response) => response.json())
-              .catch((error) => console.error("Error:", error))
-              .then((response) => {
-                console.log("Success:", response);
-                openStudyspotPage(studyspotDesc);
-              });
+        contribform.onsubmit = async (e) => {
+          e.preventDefault();
+          formdata = new FormData(contribform);
+          formdata.append("geom", "random");
+          formdata.append("user", "any");
+          let response = await fetch('{% url "sgw:studyspotform" %}', {
+            method: "POST",
+            body: formdata,
           });
+
+          let result = await openHomePage();
+          console.log("success");
+        };
+        // document
+        //   .getElementById("contribform")
+        //   .addEventListener("submit", function (e) {
+        //     e.preventDefault();
+
+        //     var formData = new FormData();
+        //     var valueField = document.getElementById("myRange").value;
+
+        //     let headers = new Headers();
+        //     const csrftoken = getCookie("csrftoken");
+        //     headers.append("X-CSRFToken", csrftoken);
+
+        //     formData.append("value", valueField);
+        //     formData.append("ssname", `${studyspotDesc}`);
+        //     formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+        //     fetch('{% url "sgw:studyspotform" %}', {
+        //       method: "POST",
+        //       body: formData,
+        //       headers: headers,
+        //       credentials: "same-origin",
+        //     })
+        //       // .then((response) => response.json())
+        //       .catch((error) => console.error("Error:", error))
+        //       .then((response) => {
+        //         console.log("Success:", response);
+        //         openHomePage();
+        //       });
+        //   });
       }
     </script>
   </head>

@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 
 from .models import StudySpot, Rating, Location
-from .forms import ContributeStudySpotForm, ContributeRatingForm, ContributeLocationForm
+from .forms import *
 from django.urls import reverse
 
 from django.contrib import messages
@@ -73,6 +73,8 @@ def contributeRating(request):
 
     return render(request, 'contributeRating.html', {'form': form, "studyspots": list(StudySpot.objects.all())})
 
+# Obsolete
+
 
 def contributeLocation(request):
     if request.method == 'POST':
@@ -91,10 +93,13 @@ def contributeLocation(request):
 
 
 def mapview(request):
+    form = StudySpotContribForm()
+
     context = {
         "locations": list(Location.objects.all()),
         "studyspots": list(StudySpot.objects.all()),
-        "ratings": list(Rating.objects.all())
+        "ratings": list(Rating.objects.all()),
+        "form": form
     }
     return render(request, "sgw/leaflet.html", context)
 
@@ -131,4 +136,18 @@ def ratingform(request):
             studyspot=StudySpot.objects.get(description=ssname)
         )
         print(Rating.objects.all)
+    return HttpResponse('')
+
+
+def contributeStudySpotForm(request):
+    if request.method == 'POST':
+        # if manual assingment is needed:
+        # data = {'subject': 'hello',
+        #         'message': 'Hi there',}
+        # form = StudySpotContribForm(data)
+        form = StudySpotContribForm(request.POST)
+        print("posted")
+        if form.is_valid():
+            studySpotContrib = form.save()
+            print("saved")
     return HttpResponse('')
