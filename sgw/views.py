@@ -119,8 +119,6 @@ def studyspotjson(request):
 def ratingjson(request):
     data = serializers.serialize(
         "json", Rating.objects.all(), cls=DjangoJSONEncoder)
-    print("producing json file")
-    print(data)
     return HttpResponse(data, content_type="application/JSON")
 
 
@@ -141,13 +139,15 @@ def ratingform(request):
 
 def contributeStudySpotForm(request):
     if request.method == 'POST':
-        # if manual assingment is needed:
-        # data = {'subject': 'hello',
-        #         'message': 'Hi there',}
-        # form = StudySpotContribForm(data)
-        form = StudySpotContribForm(request.POST)
+        dic = request.POST.dict()
+        print(dic)
+        dic['geom'] = {'type': "Point",
+                       'coordinates': list(map(float, request.POST['geom'].split(',')))}
+        form = StudySpotContribForm(dic, request.FILES)
         print("posted")
         if form.is_valid():
             studySpotContrib = form.save()
             print("saved")
+        else:
+            print(form.errors)
     return HttpResponse('')

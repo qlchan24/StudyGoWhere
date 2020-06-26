@@ -219,10 +219,11 @@
         });
 
       var dataurl = '{% url "sgw:data" %}';
+      var map;
 
       window.addEventListener("map:init", function (event) {
         openHomePage();
-        var map = event.detail.map;
+        map = event.detail.map;
 
         // add sidebar to mapview
         var sidebar = L.control.sidebar("sidebar").addTo(map);
@@ -661,20 +662,30 @@
               });
           });
       }
+
       function openStudySpotContrib() {
-        const cleareddoc = document.getElementById("mainInterface");
-        cleareddoc.innerHTML = "";
+        // create form element
         const contribform = document.createElement("form");
         contribform.id = "contribform";
+        contribform.enctype = "multipart/form-data";
         contribform.innerHTML = `{%csrf_token%}
         <table>
+          <b>
+          <p>1. Click on the map to set the location</p>
+          <p>2. Fill in the details about the place below</p>
+          </b>
           {{ form.as_p }}
         </table>
         <input type="submit" value="Submit">
         `;
 
+        const cleareddoc = document.getElementById("mainInterface");
+        cleareddoc.innerHTML = "";
         cleareddoc.appendChild(contribform);
+
         var labels = document.getElementsByTagName("LABEL");
+
+        // removing labels
         for (var i = 0; i < labels.length; i++) {
           if (
             labels[i].htmlFor == "id_user" ||
@@ -683,54 +694,48 @@
             labels[i].parentNode.removeChild(labels[i]);
           }
         }
+
+        // removing buttons
         var userqn = document.getElementById("id_user");
         userqn.parentNode.removeChild(userqn);
         var geomqn = document.getElementById("id_geom");
         geomqn.parentNode.removeChild(geomqn);
-        // to insert back button and functionality for saving location
+        // to insert back button
 
+        // putting marker
+        map.on("click", onMapClick);
+        var popup = new L.Popup();
+        let lat, lng;
+
+        function onMapClick(e) {
+          lat = e.latlng.lat;
+          lng = e.latlng.lng;
+          popup.setLatLng(e.latlng);
+          popup.setContent("You selected this point");
+          map.openPopup(popup);
+        }
+
+        // handles form submission
         contribform.onsubmit = async (e) => {
           e.preventDefault();
+
+          if (lat == undefined) {
+            alert("You haven't selected a point on the map");
+            return;
+          }
+
           formdata = new FormData(contribform);
-          formdata.append("geom", "random");
+          let geom = [lat, lng];
+          formdata.append("geom", geom);
           formdata.append("user", "any");
+
           let response = await fetch('{% url "sgw:studyspotform" %}', {
             method: "POST",
             body: formdata,
           });
 
           let result = await openHomePage();
-          console.log("success");
         };
-        // document
-        //   .getElementById("contribform")
-        //   .addEventListener("submit", function (e) {
-        //     e.preventDefault();
-
-        //     var formData = new FormData();
-        //     var valueField = document.getElementById("myRange").value;
-
-        //     let headers = new Headers();
-        //     const csrftoken = getCookie("csrftoken");
-        //     headers.append("X-CSRFToken", csrftoken);
-
-        //     formData.append("value", valueField);
-        //     formData.append("ssname", `${studyspotDesc}`);
-        //     formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
-
-        //     fetch('{% url "sgw:studyspotform" %}', {
-        //       method: "POST",
-        //       body: formData,
-        //       headers: headers,
-        //       credentials: "same-origin",
-        //     })
-        //       // .then((response) => response.json())
-        //       .catch((error) => console.error("Error:", error))
-        //       .then((response) => {
-        //         console.log("Success:", response);
-        //         openHomePage();
-        //       });
-        //   });
       }
     </script>
   </head>
