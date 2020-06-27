@@ -163,6 +163,10 @@
         width: 30%;
       }
 
+      .ssphoto {
+        max-width: 100%;
+      }
+
       #mainInterface .studyspotbutton div {
         margin: auto;
       }
@@ -561,6 +565,7 @@
           var wsocket = "{{studyspot.wallSockets}}";
           var locname = "{{studyspot.locationName.locationName}}";
           var pkno = "{{studyspot.pk}}";
+          var imgurl = "{{studyspot.image.url}}";
         }
         ("{% endfor %}");
 
@@ -578,10 +583,9 @@
               }% (${x.fields.whenRated.slice(8, 10)}/${x.fields.whenRated.slice(
                 5,
                 7
-              )}, ${x.fields.whenRated.slice(
-                11,
-                13
-              )}:${x.fields.whenRated.slice(14, 16)}) </li>`;
+              )}, ${
+                Number(x.fields.whenRated.slice(11, 13)) + 8
+              }:${x.fields.whenRated.slice(14, 16)}) </li>`;
               ratingArray.push(x);
             });
             ratingDict = {};
@@ -624,6 +628,12 @@
 
         const backButton = document.createElement("button");
         const heading = document.createElement("h2");
+
+        const studyspotImage = document.createElement("img");
+        studyspotImage.className = "ssphoto";
+        studyspotImage.src = imgurl;
+        studyspotImage.alt = "studyspot_image.jpg";
+
         const attribs = document.createElement("h3");
         const graphdiv = document.createElement("div");
         const rform = document.createElement("form");
@@ -665,6 +675,7 @@
         cleareddoc.innerHTML = "";
         cleareddoc.appendChild(backButton);
         cleareddoc.appendChild(heading);
+        cleareddoc.appendChild(studyspotImage);
         cleareddoc.appendChild(attribs);
         cleareddoc.appendChild(ratings);
         cleareddoc.appendChild(graphdiv);
