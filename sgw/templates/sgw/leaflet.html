@@ -700,7 +700,7 @@
         userqn.parentNode.removeChild(userqn);
         var geomqn = document.getElementById("id_geom");
         geomqn.parentNode.removeChild(geomqn);
-        // to insert back button
+        // to insert back button and to remove marker after submit
 
         // putting marker
         map.on("click", onMapClick);
@@ -733,7 +733,7 @@
             method: "POST",
             body: formdata,
           });
-
+          map.closePopup(popup);
           let result = await openHomePage();
         };
       }
