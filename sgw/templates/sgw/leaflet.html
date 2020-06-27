@@ -88,14 +88,14 @@
         background-color: white;
       }
 
-      h2 {
+      h2:not(.profile) {
         position: sticky;
         top: 200px;
         background-color: white;
         z-index: 100;
       }
 
-      h3 {
+      h3:not(.ss) {
         position: sticky;
         top: 222px;
         background-color: white;
@@ -106,12 +106,6 @@
         top: 127px;
         background-color: white;
         z-index: 100;
-      }
-
-      h3.ss {
-        position: sticky;
-        top: 149px;
-        background-color: white;
       }
 
       /* add padding  */
@@ -172,6 +166,25 @@
       #mainInterface .studyspotbutton div {
         margin: auto;
       }
+
+      #mainInterfaceProfile button {
+        width: 100%;
+        border: 1px solid #ddd; /* Add a border to all links */
+        margin-top: -1px; /* Prevent double borders */
+        background-color: #f6f6f6; /* Grey background color */
+        padding: 12px; /* Add some padding */
+        text-decoration: none; /* Remove default text underline */
+        font-size: 18px; /* Increase the font-size */
+        color: black; /* Add a black text color */
+        display: block; /* Make it into a block element to fill the whole list */
+      }
+
+      #backHomeProfile {
+        position: sticky;
+        top: 39px;
+        z-index: 100;
+        background-color: white;
+      }
     </style>
     <script type="text/javascript">
       /*     let locationjson = Promise.resolve(
@@ -222,6 +235,7 @@
       var map;
 
       window.addEventListener("map:init", function (event) {
+        openHomePageProfile();
         openHomePage();
         map = event.detail.map;
 
@@ -454,9 +468,13 @@
         backButton.setAttribute("onclick", "openHomePage()");
 
         name.className = "location";
-        name.innerHTML = `Viewing ${locationName}`;
+        name.innerHTML = `${locationName}`;
         timing.className = "location";
-        timing.innerHTML = `Operating Time: ${openingtime} - ${closingtime}`;
+        if (openingtime == closingtime) {
+          timing.innerHTML = "Always open!";
+        } else {
+          timing.innerHTML = `Operating Time: ${openingtime} - ${closingtime}`;
+        }
 
         let currentLevel, levelSection, title, studyspotPara, studyspotButton;
         const arr = ssfilter();
@@ -469,7 +487,13 @@
               title = document.createElement("h3");
               studyspotsOnLevel = document.createElement("ul");
 
-              title.innerHTML = `Level {{studyspot.levelNumber}}`;
+              let levelNumber = Number(`{{studyspot.levelNumber}}`);
+              if (levelNumber < 0) {
+                levelNumber = -levelNumber;
+                title.innerHTML = `Level B${levelNumber}`;
+              } else {
+                title.innerHTML = `Level ${levelNumber}`;
+              }
 
               levelSection.appendChild(title);
               levelSection.appendChild(studyspotsOnLevel);
@@ -549,7 +573,15 @@
             const lol = x.filter((y) => y.fields.studyspot == pkno);
             lol.forEach((x) => {
               console.log(x);
-              ratings.innerHTML += `<li> ${x.fields.crowdedness}%, ${x.fields.whenRated} </li>`;
+              ratings.innerHTML += `<li> ${
+                x.fields.crowdedness
+              }% (${x.fields.whenRated.slice(8, 10)}/${x.fields.whenRated.slice(
+                5,
+                7
+              )}, ${x.fields.whenRated.slice(
+                11,
+                13
+              )}:${x.fields.whenRated.slice(14, 16)}) </li>`;
               ratingArray.push(x);
             });
             ratingDict = {};
@@ -571,7 +603,7 @@
             var chart = new CanvasJS.Chart("chartContainer", {
               title: {
                 text: "Crowdedness",
-                fontFamily: "Helvetica Neue",
+                fontFamily: "Arial",
               },
               data: [
                 {
@@ -599,7 +631,7 @@
         graphdiv.style = "height: 300px; width: 100%;";
 
         backButton.id = "backLocation";
-        backButton.innerHTML = `Back to ${locname}`;
+        backButton.innerHTML = `<< ${locname}`;
         backButton.type = "button";
         backButton.setAttribute("onclick", `openLocationPage("${locname}")`);
 
@@ -615,10 +647,16 @@
 
         rform.id = "rform";
         rform.innerHTML = `{%csrf_token%}
-        <label for = 'value'> Gauge the crowdedness of this place: </label>
-        <input type="range" min="1" max="100" value="50" class="slider" id="myRange"><br><br>
+        <p><label for = 'value'> Gauge the crowdedness of this place: </label></p>
+        <p>Empty <input type="range" min="1" max="100" value="50" class="slider" id="myRangeSlider"> Packed </p>
         <input type="submit" value="Submit">
         `;
+
+        var slider = document.getElementById("myRangeSlider");
+        var outputNum = document.createElement("h4");
+        // outputNum.innerHTML = slider.value;
+
+        rform.appendChild(outputNum);
 
         console.log(ratings);
 
@@ -638,7 +676,7 @@
             e.preventDefault();
 
             var formData = new FormData();
-            var valueField = document.getElementById("myRange").value;
+            var valueField = document.getElementById("myRangeSlider").value;
 
             let headers = new Headers();
             const csrftoken = getCookie("csrftoken");
@@ -663,7 +701,34 @@
           });
       }
 
+      function openHomePageProfile() {
+        L.control.sidebar("sidebar").addTo(map).open("profile");
+        const doc = document.getElementById("mainInterfaceProfile");
+        doc.innerHTML = "";
+
+        const greeting = document.createElement("h2");
+        greeting.className = "profile";
+        greeting.innerHTML = "Hello, username";
+
+        const contribBtn = document.createElement("button");
+        contribBtn.innerHTML = `Contribute a place`;
+        contribBtn.type = "button";
+        contribBtn.setAttribute("onclick", `openStudySpotContrib()`);
+
+        doc.appendChild(greeting);
+        doc.appendChild(contribBtn);
+      }
+
       function openStudySpotContrib() {
+        const cleareddoc = document.getElementById("mainInterfaceProfile");
+        cleareddoc.innerHTML = "";
+
+        const backBtn = document.createElement("button");
+        backBtn.innerHTML = `Back to Your Profile`;
+        backBtn.type = "button";
+        backBtn.id = "backHomeProfile";
+        backBtn.setAttribute("onclick", `openHomePageProfile()`);
+
         // create form element
         const contribform = document.createElement("form");
         contribform.id = "contribform";
@@ -679,8 +744,7 @@
         <input type="submit" value="Submit">
         `;
 
-        const cleareddoc = document.getElementById("mainInterface");
-        cleareddoc.innerHTML = "";
+        cleareddoc.appendChild(backBtn);
         cleareddoc.appendChild(contribform);
 
         var labels = document.getElementsByTagName("LABEL");
@@ -734,7 +798,8 @@
             body: formdata,
           });
           map.closePopup(popup);
-          let result = await openHomePage();
+          alert("Thanks for your contribution!");
+          let result = await openHomePageProfile();
         };
       }
     </script>
@@ -775,7 +840,7 @@
             />
           </div>
           <div id="mainInterface"></div>
-          <p>fake copyright here. plus some site links</p>
+          <p>copyright (C) 2020 studygowhere inc</p>
         </div>
 
         <div class="sidebar-pane" id="favourites">
@@ -791,6 +856,8 @@
               ><i class="fa fa-caret-left"></i
             ></span>
           </h1>
+          <div id="mainInterfaceProfile"></div>
+          <p>copyright (C) 2020 studygowhere inc</p>
         </div>
       </div>
     </div>
