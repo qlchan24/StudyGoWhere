@@ -1,0 +1,158 @@
+body {
+  padding: 0;
+  margin: 0;
+}
+html,
+body,
+#mymap {
+  height: 100%;
+  width: 100vw;
+  font: 10pt "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
+/*for blue header*/
+div .sidebar-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/*for search bar*/
+/* enable absolute positioning */
+.inner-addon {
+  position: sticky;
+  top: 40px;
+  background-color: white;
+  z-index: 100;
+}
+
+/* style icon */
+.inner-addon .fa {
+  position: relative;
+  padding: 10px;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* align icon */
+.left-addon .fa {
+  position: absolute;
+  left: 0px;
+  top: 3px;
+  z-index: 100;
+}
+
+/*for filter section*/
+div .fs {
+  position: sticky;
+  top: 82px;
+  background-color: white;
+  z-index: 100;
+}
+
+/*for back buttons*/
+#backHome {
+  position: sticky;
+  top: 153px;
+  z-index: 100;
+  background-color: white;
+}
+
+#backLocation {
+  position: sticky;
+  top: 80px;
+  z-index: 100;
+  background-color: white;
+}
+
+h2:not(.profile) {
+  position: sticky;
+  top: 200px;
+  background-color: white;
+  z-index: 100;
+}
+
+h3:not(.ss) {
+  position: sticky;
+  top: 222px;
+  background-color: white;
+}
+
+h2.ss {
+  position: sticky;
+  top: 127px;
+  background-color: white;
+  z-index: 100;
+}
+
+/* add padding  */
+.left-addon #myInput {
+  width: -webkit-fill-available; /* Full-width */
+  font-size: 14px; /* Increase font-size */
+  padding: 6px 20px 6px 29px; /* Add some padding */
+  border: 1px solid #ddd; /* Add a grey border */
+  margin-top: 4px;
+  margin-bottom: 8px; /* Add some space below the input */
+}
+
+#myUL,
+#mainInterface ul:not(.ratingslist) {
+  /* Remove default list styling */
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#myUL li button,
+#mainInterface button,
+#mainInterfaceProfile button {
+  width: 100%;
+  border: 1px solid #ddd; /* Add a border to all links */
+  margin-top: -1px; /* Prevent double borders */
+  background-color: #f6f6f6; /* Grey background color */
+  padding: 12px; /* Add some padding */
+  text-decoration: none; /* Remove default text underline */
+  font-size: 18px; /* Increase the font-size */
+  color: black; /* Add a black text color */
+  display: block; /* Make it into a block element to fill the whole list */
+}
+
+#mainInterface .studyspotbutton {
+  width: auto;
+  overflow: auto;
+  border: 1px solid #ddd; /* Add a border to all links */
+  margin-top: -1px; /* Prevent double borders */
+  background-color: #f6f6f6; /* Grey background color */
+  padding: 6px; /* Add some padding */
+  text-decoration: none; /* Remove default text underline */
+  font-size: 14px; /* Increase the font-size */
+  color: black; /* Add a black text color */
+  display: block; /* Make it into a block element to fill the whole list */
+}
+
+#myUL li button:hover:not(.header),
+#mainInterface button:hover:not(.header),
+#mainInterface .studyspotbutton:hover:not(.header),
+#mainInterfaceProfile button:hover:not(.header) {
+  background-color: #eee; /* Add a hover effect to all links, except for headers */
+}
+
+.photo {
+  float: right;
+  width: 30%;
+}
+
+.ssphoto {
+  max-width: 100%;
+}
+
+#mainInterface .studyspotbutton div {
+  margin: auto;
+}
+
+#backHomeProfile {
+  position: sticky;
+  top: 39px;
+  z-index: 100;
+  background-color: white;
+}

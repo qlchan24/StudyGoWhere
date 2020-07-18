@@ -10,7 +10,8 @@ from django.contrib import messages
 
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
-
+import json
+from django.contrib.auth import logout
 # from .serializers import RatingSerializer, LocationSerializer, StudySpotSerializer
 
 # Create your views here.
@@ -93,13 +94,17 @@ def contributeLocation(request):
 
 
 def mapview(request):
-    form = StudySpotContribForm()
+    contribform = StudySpotContribForm()
+    loginform = AuthenticationForm()
+    usercreateform = UserCreationForm()
 
     context = {
         "locations": list(Location.objects.all()),
         "studyspots": list(StudySpot.objects.all()),
         "ratings": list(Rating.objects.all()),
-        "form": form
+        "cform": contribform,
+        "lform": loginform,
+        "uform": usercreateform
     }
     return render(request, "sgw/leaflet.html", context)
 
@@ -151,3 +156,53 @@ def contributeStudySpotForm(request):
         else:
             print(form.errors)
     return HttpResponse('')
+
+
+def login(request):
+    if request.method == 'POST':
+        login_form = AuthenticationForm(request, request.POST)
+        response_data = {}
+        print("login request pending")
+        if login_form.is_valid():
+            response_data['result'] = 'Success!'
+            response_data['message'] = 'You"re logged in'
+            print("login request success")
+        else:
+            response_data['result'] = 'failed'
+            response_data['message'] = 'Invalid username or password'
+            print("login request failed")
+
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
+def logout_view(request):
+    logout(request)
+    return HttpResponse("")
+
+
+def usercreate(request):
+    if request.method == 'POST':
+        f = UserCreationForm(request.POST)
+        response_data = {}
+        print("successful post")
+        if f.is_valid():
+            f.save()
+            messages.success(request, 'Account created successfully')
+            print("sucessful creation")
+            response_data['message'] = 'sucessful creation'
+        else:
+            response_data['message'] = 'failed creation'
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
+# def my_view(request):
+#     username = request.POST['username']
+#     password = request.POST['password']
+#     user = authenticate(request, username=username, password=password)
+#     if user is not None:
+#         login(request, user)
+#         # Redirect to a success page.
+#         ...
+#     else:
+#         # Return an 'invalid login' error message.
+#         ...

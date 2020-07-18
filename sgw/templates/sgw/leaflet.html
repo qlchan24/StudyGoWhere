@@ -20,203 +20,8 @@
       rel="stylesheet"
       href="{% static 'sgw/sidebar-v2/css/leaflet-sidebar.css' %}"
     />
-    <style>
-      body {
-        padding: 0;
-        margin: 0;
-      }
-      html,
-      body,
-      #mymap {
-        height: 100%;
-        width: 100vw;
-        font: 10pt "Helvetica Neue", Arial, Helvetica, sans-serif;
-      }
-
-      /*for blue header*/
-      div .sidebar-header {
-        position: sticky;
-        top: 0;
-        z-index: 100;
-      }
-
-      /*for search bar*/
-      /* enable absolute positioning */
-      .inner-addon {
-        position: sticky;
-        top: 40px;
-        background-color: white;
-        z-index: 100;
-      }
-
-      /* style icon */
-      .inner-addon .fa {
-        position: relative;
-        padding: 10px;
-        pointer-events: none;
-        z-index: 100;
-      }
-
-      /* align icon */
-      .left-addon .fa {
-        position: absolute;
-        left: 0px;
-        top: 3px;
-        z-index: 100;
-      }
-
-      /*for filter section*/
-      div .fs {
-        position: sticky;
-        top: 82px;
-        background-color: white;
-        z-index: 100;
-      }
-
-      /*for back buttons*/
-      #backHome {
-        position: sticky;
-        top: 153px;
-        z-index: 100;
-        background-color: white;
-      }
-
-      #backLocation {
-        position: sticky;
-        top: 80px;
-        z-index: 100;
-        background-color: white;
-      }
-
-      h2:not(.profile) {
-        position: sticky;
-        top: 200px;
-        background-color: white;
-        z-index: 100;
-      }
-
-      h3:not(.ss) {
-        position: sticky;
-        top: 222px;
-        background-color: white;
-      }
-
-      h2.ss {
-        position: sticky;
-        top: 127px;
-        background-color: white;
-        z-index: 100;
-      }
-
-      /* add padding  */
-      .left-addon #myInput {
-        width: -webkit-fill-available; /* Full-width */
-        font-size: 14px; /* Increase font-size */
-        padding: 6px 20px 6px 29px; /* Add some padding */
-        border: 1px solid #ddd; /* Add a grey border */
-        margin-top: 4px;
-        margin-bottom: 8px; /* Add some space below the input */
-      }
-
-      #myUL,
-      #mainInterface ul {
-        /* Remove default list styling */
-        list-style-type: none;
-        padding: 0;
-        margin: 0;
-      }
-
-      #myUL li button,
-      #mainInterface button {
-        width: 100%;
-        border: 1px solid #ddd; /* Add a border to all links */
-        margin-top: -1px; /* Prevent double borders */
-        background-color: #f6f6f6; /* Grey background color */
-        padding: 12px; /* Add some padding */
-        text-decoration: none; /* Remove default text underline */
-        font-size: 18px; /* Increase the font-size */
-        color: black; /* Add a black text color */
-        display: block; /* Make it into a block element to fill the whole list */
-      }
-
-      #mainInterface .studyspotbutton {
-        width: auto;
-        overflow: auto;
-        border: 1px solid #ddd; /* Add a border to all links */
-        margin-top: -1px; /* Prevent double borders */
-        background-color: #f6f6f6; /* Grey background color */
-        padding: 6px; /* Add some padding */
-        text-decoration: none; /* Remove default text underline */
-        font-size: 14px; /* Increase the font-size */
-        color: black; /* Add a black text color */
-        display: block; /* Make it into a block element to fill the whole list */
-      }
-
-      #myUL li button:hover:not(.header),
-      #mainInterface button:hover:not(.header),
-      #mainInterface .studyspotbutton:hover:not(.header) {
-        background-color: #eee; /* Add a hover effect to all links, except for headers */
-      }
-
-      .photo {
-        float: right;
-        width: 30%;
-      }
-
-      .ssphoto {
-        max-width: 100%;
-      }
-
-      #mainInterface .studyspotbutton div {
-        margin: auto;
-      }
-
-      #mainInterfaceProfile button {
-        width: 100%;
-        border: 1px solid #ddd; /* Add a border to all links */
-        margin-top: -1px; /* Prevent double borders */
-        background-color: #f6f6f6; /* Grey background color */
-        padding: 12px; /* Add some padding */
-        text-decoration: none; /* Remove default text underline */
-        font-size: 18px; /* Increase the font-size */
-        color: black; /* Add a black text color */
-        display: block; /* Make it into a block element to fill the whole list */
-      }
-
-      #backHomeProfile {
-        position: sticky;
-        top: 39px;
-        z-index: 100;
-        background-color: white;
-      }
-    </style>
+    <link rel="stylesheet" href="{% static 'sgw/sgwmap.css' %}" />
     <script type="text/javascript">
-      /*     let locationjson = Promise.resolve(
-              fetch('{% url "sgw:locationjson" %}').then((x) => x.json())
-            );
-
-            let studyspotjson = Promise.resolve(
-              fetch('{% url "sgw:studyspotjson" %}').then((x) => x.json())
-            );
-
-            console.log(locationjson);
-            console.log(studyspotjson);
-
-            locationjson.then((x) => {
-              const chosen_id = x.filter((y) => y.fields.locationName == "COM1")[0]
-                .pk;
-
-              console.log(chosen_id);
-
-              studyspotjson.then((x) => {
-                const lol = x
-                  .filter((y) => y.fields.locationName == chosen_id)
-                  .map((x) => x.fields.description);
-                console.log(lol);
-              });
-            });
-      */
-
       Promise.all([
         fetch('{% url "sgw:locationjson" %}'),
         fetch('{% url "sgw:studyspotjson" %}'),
@@ -292,57 +97,6 @@
       //perhaps can include a button to reset view, or another to fly to current location.
       //perhaps limit map boundaries too.
       //default location: L.map("map").setView([1.296894, 103.776387], 16);
-
-      /*
-                          To include the studyspots:
-                          method 1:
-                          for each study spot in list:
-                          get point lat and lon
-                          var lon = "{{ studyspot.geometry.x }}";
-                          var lat = "{{ studyspot.geometry.y }}";
-                          add marker to map (and check for color):
-                          for red: L.marker([lat, lon],{color: 'red',fillColor: '#f03',fillOpacity: 0.5,}).addTo(map);
-                          */
-      /*
-                          method 2:geojson
-                          var studyspots = [{
-                            "type": "Feature",
-                            "properties": { "name": "hssml","crowdedness": "2","show_on_map": true },
-                            "geometry": {
-                              "type": "Point",
-                              "coordinates": [x1,y1]
-                            }
-                          }, {
-                            "type": "Feature",
-                            "properties": { "name": "com1 annex","crowdedness": "3","show_on_map": true },
-                            "geometry": {
-                              "type": "Point",
-                              "coordinates": [x2,y2]
-                            }
-                          }];
-
-                          function onEachFeature(feature, layer) {
-                            layer.on({
-                              mouseover: highlightFeature, //to be implemented
-                              mouseout: resetHighlight, //to be implemented
-                              click: do_something //to be implemented
-                            });
-                          }
-
-                          L.geoJSON(studyspots, {
-                            style: function (feature) {
-                              switch (feature.properties.crowdedness) {
-                                case '3': return { color: "#ff0000" };
-                                case '2': return { color: "#ffff00" };
-                                case '1': return { color: "#00ff00" };
-                              }
-                            },
-                            filter: function(feature, layer) {
-                              return feature.properties.show_on_map;
-                            },
-                            onEachFeature: onEachFeature
-                          }).addTo(map);      */
-      //}
 
       //for the search bar
       function searchFunction() {
@@ -570,6 +324,7 @@
         ("{% endfor %}");
 
         const ratings = document.createElement("ul");
+        ratings.className = "ratingslist";
         ratings.innerHTML = ``;
         let ratingjson = fetch('{% url "sgw:ratingjson" %}')
           .then((x) => x.json())
@@ -725,9 +480,110 @@
         contribBtn.innerHTML = `Contribute a place`;
         contribBtn.type = "button";
         contribBtn.setAttribute("onclick", `openStudySpotContrib()`);
-
         doc.appendChild(greeting);
         doc.appendChild(contribBtn);
+
+        //under construction
+
+        //use requestcontext to check if user is signed in and retrieve username
+
+        // UserCreationForm: to be relocated
+        const userRegForm = document.createElement("form");
+        userRegForm.id = "userregform";
+        userRegForm.enctype = "multipart/form-data";
+        userRegForm.method = "post";
+        userRegForm.action = "{% url 'sgw:usercreation' %}";
+        userRegForm.innerHTML = `{%csrf_token%}
+        <table>
+          {{ uform.as_p }}
+        </table>
+        <input type="submit" value="Submit">
+        `;
+        userRegForm.onsubmit = async (e) => {
+          e.preventDefault();
+
+          formdata = new FormData(userRegForm);
+          let response = await fetch('{% url "sgw:usercreation" %}', {
+            method: "POST",
+            body: formdata,
+          })
+            .then((resp) => resp.json())
+            .then((data) =>
+              data["message"] == "sucessful creation"
+                ? openloginpage() //to be implemented
+                : alert(data["message"])
+            );
+        };
+        doc.appendChild(userRegForm);
+
+        //may want to use django messages instead of alert
+        // check permissions and groups too
+
+        //login form: to be relocated
+        const loginform = document.createElement("form");
+        loginform.id = "loginform";
+        loginform.enctype = "multipart/form-data";
+        loginform.method = "post";
+        loginform.action = "{% url 'sgw:loginform' %}";
+        loginform.innerHTML = `{%csrf_token%}
+        <table>
+          {{ lform.as_p }}
+        </table>
+        <input type="submit" value="Submit">
+        `;
+
+        // spare items
+        `
+        <input type="hidden" name="next" value="{{ next }}" />
+        `;
+
+        // if you setup the password_reset view in your URLconf
+        // <p><a href=" <djangotag> url 'password_reset' <djangotag>">Lost password?</a></p>
+
+        loginform.onsubmit = async (e) => {
+          e.preventDefault();
+
+          formdata = new FormData(loginform);
+          let response = await fetch('{% url "sgw:loginform" %}', {
+            method: "POST",
+            body: formdata,
+          })
+            .then((resp) => resp.json())
+            .then((data) =>
+              data["result"] == "Success!"
+                ? openUserpage() //may be the openHomePageProfile() instead once the form is relocated
+                : alert(data["message"])
+            );
+        };
+        doc.appendChild(loginform);
+
+        //logout button: to be formatted
+        const logoutButton = document.createElement("button");
+        logoutButton.textContent = "log out";
+        logoutButton.onclick = (e) => {
+          fetch("{% url 'sgw:logout' %}").then((r) => alert("logged out"));
+        };
+        doc.appendChild(logoutButton);
+      }
+
+      //temp
+      function openUserpage() {
+        //TODO
+        alert("Logged in");
+        return;
+      }
+
+      // users are redirected here from openHomePageProfile() if user = anonymous, or from openUserRegpage()
+      // after they submit the form
+      function openLoginpage() {
+        //TODO
+        return;
+      }
+
+      // users are redirected here from openLoginpage() if they clicked new user button
+      function openUserRegpage() {
+        //TODO
+        return;
       }
 
       function openStudySpotContrib() {
@@ -750,7 +606,7 @@
           <p>1. Click on the map to set the location</p>
           <p>2. Fill in the details about the place below</p>
           </b>
-          {{ form.as_p }}
+          {{ cform.as_p }}
         </table>
         <input type="submit" value="Submit">
         `;
