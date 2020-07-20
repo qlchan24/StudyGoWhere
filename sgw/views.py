@@ -178,6 +178,7 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             response_data['result'] = 'Success!'
             response_data['message'] = 'You"re logged in'
+            response_data['username'] = username
             login(request, user)
 
             print("login request success")

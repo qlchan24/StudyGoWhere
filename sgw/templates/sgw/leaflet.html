@@ -467,17 +467,21 @@
           });
       }
 
+      let user; 
+
       function openHomePageProfile() {
         L.control.sidebar("sidebar").addTo(map).open("profile");
         const doc = document.getElementById("mainInterfaceProfile");
         doc.innerHTML = "";
         console.log(`{{ user.is_authenticated }}`); 
+        if ("{{user.is_authenticated }}" != "True" && user == null) { openLoginpage(); return; }
+        if ("{{user.is_authenticated }}" == "True" ) { user = "{{ user.get_username }}"; }
 
-        ("{% if user.is_authenticated %}"); 
         const greeting = document.createElement("h2");
         greeting.className = "profile";
-        greeting.innerHTML = "Hello, {{ user.get_username }}";
-
+        
+        greeting.innerHTML = `Hello, ${user}`;
+        
         const contribBtn = document.createElement("button");
         contribBtn.innerHTML = `Contribute a place`;
         contribBtn.type = "button";
@@ -491,7 +495,9 @@
         const logoutButton = document.createElement("button");
         logoutButton.textContent = "log out";
         logoutButton.onclick = (e) => {
-          fetch("{% url 'sgw:logout' %}").then((r) => alert("logged out"));
+          fetch("{% url 'sgw:logout' %}").then((r) => {
+          user=null;
+          openLoginpage();  });
         };
         doc.appendChild(logoutButton);
         
@@ -501,7 +507,22 @@
         //use requestcontext to check if user is signed in and retrieve username
 
         // UserCreationForm: to be relocated
-        ("{% else %}"); 
+      }
+
+      //temp
+      function openUserpage() {
+        //TODO
+        alert("Logged in");
+        return;
+      }
+
+      // users are redirected here from openHomePageProfile() if user = anonymous, or from openUserRegpage()
+      // after they submit the form
+      function openLoginpage() {
+
+        L.control.sidebar("sidebar").addTo(map).open("profile");
+        const doc = document.getElementById("mainInterfaceProfile");
+        doc.innerHTML = "";
         const greeting = document.createElement("h2");
         const subgreeting = document.createElement("h4");
         greeting.className = "profile";
@@ -547,33 +568,19 @@
             body: formdata,
           })
             .then((resp) => resp.json())
-            .then((data) =>
-              data["result"] == "Success!"
-                ? openHomePageProfile() //may be the openHomePageProfile() instead once the form is relocated
-                : alert(data["message"])
-            );
+            .then((data) => {
+              if (data["result"] == "Success!") {
+                user = data["username"];
+                openHomePageProfile();
+                 } //may be the openHomePageProfile() instead once the form is relocated
+                else { alert(data["message"]);  } }
+            ); 
         };
         
         doc.appendChild(greeting); 
         doc.appendChild(subgreeting); 
         doc.appendChild(loginform);
         doc.appendChild(newUserBtn); 
-
-        ("{% endif %}"); 
-      }
-
-      //temp
-      function openUserpage() {
-        //TODO
-        alert("Logged in");
-        return;
-      }
-
-      // users are redirected here from openHomePageProfile() if user = anonymous, or from openUserRegpage()
-      // after they submit the form
-      function openLoginpage() {
-        //not using this function as i put the login page inside openHomePageProfile()
-        return;
       }
 
       // users are redirected here from openLoginpage() if they clicked new user button
