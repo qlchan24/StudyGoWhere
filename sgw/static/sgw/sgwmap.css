@@ -72,7 +72,7 @@ h2:not(.profile) {
   z-index: 100;
 }
 
-h3:not(.ss) {
+h3:not(.ss):not(.profile) {
   position: sticky;
   top: 222px;
   background-color: white;

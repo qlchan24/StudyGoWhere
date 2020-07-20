@@ -11,7 +11,8 @@ from django.contrib import messages
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
 import json
-from django.contrib.auth import logout
+from django.contrib.auth import authenticate, login, logout
+from django.template import RequestContext
 # from .serializers import RatingSerializer, LocationSerializer, StudySpotSerializer
 
 # Create your views here.
@@ -106,7 +107,10 @@ def mapview(request):
         "lform": loginform,
         "uform": usercreateform
     }
-    return render(request, "sgw/leaflet.html", context)
+    request_context = RequestContext(request)
+    request_context.push(context)
+    return render(request, "sgw/leaflet.html", request_context.flatten())
+    render()
 
 
 def locationjson(request):
@@ -158,14 +162,24 @@ def contributeStudySpotForm(request):
     return HttpResponse('')
 
 
-def login(request):
+def login_view(request):
     if request.method == 'POST':
+        x = request.POST.get('username')
+        y = request.POST.get('password')
+
+        #user = authenticate(request, username=x, password=y)
+
         login_form = AuthenticationForm(request, request.POST)
         response_data = {}
         print("login request pending")
         if login_form.is_valid():
+            username = login_form.cleaned_data.get('username')
+            password = login_form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
             response_data['result'] = 'Success!'
             response_data['message'] = 'You"re logged in'
+            login(request, user)
+
             print("login request success")
         else:
             response_data['result'] = 'failed'

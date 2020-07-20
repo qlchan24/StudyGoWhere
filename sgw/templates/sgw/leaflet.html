@@ -471,50 +471,48 @@
         L.control.sidebar("sidebar").addTo(map).open("profile");
         const doc = document.getElementById("mainInterfaceProfile");
         doc.innerHTML = "";
+        console.log(`{{ user.is_authenticated }}`); 
 
+        ("{% if user.is_authenticated %}"); 
         const greeting = document.createElement("h2");
         greeting.className = "profile";
-        greeting.innerHTML = "Hello, username";
+        greeting.innerHTML = "Hello, {{ user.get_username }}";
 
         const contribBtn = document.createElement("button");
         contribBtn.innerHTML = `Contribute a place`;
         contribBtn.type = "button";
         contribBtn.setAttribute("onclick", `openStudySpotContrib()`);
+
         doc.appendChild(greeting);
         doc.appendChild(contribBtn);
+        console.log("is authenticated"); 
+
+        //logout button: to be formatted
+        const logoutButton = document.createElement("button");
+        logoutButton.textContent = "log out";
+        logoutButton.onclick = (e) => {
+          fetch("{% url 'sgw:logout' %}").then((r) => alert("logged out"));
+        };
+        doc.appendChild(logoutButton);
+        
 
         //under construction
 
         //use requestcontext to check if user is signed in and retrieve username
 
         // UserCreationForm: to be relocated
-        const userRegForm = document.createElement("form");
-        userRegForm.id = "userregform";
-        userRegForm.enctype = "multipart/form-data";
-        userRegForm.method = "post";
-        userRegForm.action = "{% url 'sgw:usercreation' %}";
-        userRegForm.innerHTML = `{%csrf_token%}
-        <table>
-          {{ uform.as_p }}
-        </table>
-        <input type="submit" value="Submit">
-        `;
-        userRegForm.onsubmit = async (e) => {
-          e.preventDefault();
+        ("{% else %}"); 
+        const greeting = document.createElement("h2");
+        const subgreeting = document.createElement("h4");
+        greeting.className = "profile";
+        subgreeting.className = "profile";
+        greeting.innerHTML = "Hello, stranger";
+        subgreeting.innerHTML = "You have to be logged in before contributing a rating or study spot.";
 
-          formdata = new FormData(userRegForm);
-          let response = await fetch('{% url "sgw:usercreation" %}', {
-            method: "POST",
-            body: formdata,
-          })
-            .then((resp) => resp.json())
-            .then((data) =>
-              data["message"] == "sucessful creation"
-                ? openloginpage() //to be implemented
-                : alert(data["message"])
-            );
-        };
-        doc.appendChild(userRegForm);
+        const newUserBtn = document.createElement("button");
+        newUserBtn.innerHTML = `I don't have an account yet`;
+        newUserBtn.type = "button";
+        newUserBtn.setAttribute("onclick", `openUserRegpage()`);
 
         //may want to use django messages instead of alert
         // check permissions and groups too
@@ -551,19 +549,17 @@
             .then((resp) => resp.json())
             .then((data) =>
               data["result"] == "Success!"
-                ? openUserpage() //may be the openHomePageProfile() instead once the form is relocated
+                ? openHomePageProfile() //may be the openHomePageProfile() instead once the form is relocated
                 : alert(data["message"])
             );
         };
+        
+        doc.appendChild(greeting); 
+        doc.appendChild(subgreeting); 
         doc.appendChild(loginform);
+        doc.appendChild(newUserBtn); 
 
-        //logout button: to be formatted
-        const logoutButton = document.createElement("button");
-        logoutButton.textContent = "log out";
-        logoutButton.onclick = (e) => {
-          fetch("{% url 'sgw:logout' %}").then((r) => alert("logged out"));
-        };
-        doc.appendChild(logoutButton);
+        ("{% endif %}"); 
       }
 
       //temp
@@ -576,14 +572,55 @@
       // users are redirected here from openHomePageProfile() if user = anonymous, or from openUserRegpage()
       // after they submit the form
       function openLoginpage() {
-        //TODO
+        //not using this function as i put the login page inside openHomePageProfile()
         return;
       }
 
       // users are redirected here from openLoginpage() if they clicked new user button
       function openUserRegpage() {
-        //TODO
-        return;
+        L.control.sidebar("sidebar").addTo(map).open("profile");
+        const doc = document.getElementById("mainInterfaceProfile");
+        doc.innerHTML = "";
+
+        const greeting = document.createElement("h2");
+        greeting.className = "profile";
+        greeting.innerHTML = "Create a new user";
+
+        const backBtn = document.createElement("button");
+        backBtn.innerHTML = `Back to Login`;
+        backBtn.type = "button";
+        backBtn.id = "backHomeProfile";
+        backBtn.setAttribute("onclick", `openHomePageProfile()`);
+
+        const userRegForm = document.createElement("form");
+        userRegForm.id = "userregform";
+        userRegForm.enctype = "multipart/form-data";
+        userRegForm.method = "post";
+        userRegForm.action = "{% url 'sgw:usercreation' %}";
+        userRegForm.innerHTML = `{%csrf_token%}
+        <table>
+          {{ uform.as_p }}
+        </table>
+        <input type="submit" value="Submit">
+        `;
+        userRegForm.onsubmit = async (e) => {
+          e.preventDefault();
+
+          formdata = new FormData(userRegForm);
+          let response = await fetch('{% url "sgw:usercreation" %}', {
+            method: "POST",
+            body: formdata,
+          })
+            .then((resp) => resp.json())
+            .then((data) =>
+              data["message"] == "sucessful creation"
+                ? openHomePageProfile() //to be implemented
+                : alert(data["message"])
+            );
+        };
+        doc.appendChild(backBtn); 
+        doc.appendChild(greeting);
+        doc.appendChild(userRegForm);
       }
 
       function openStudySpotContrib() {
