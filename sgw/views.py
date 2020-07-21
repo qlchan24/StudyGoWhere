@@ -140,7 +140,7 @@ def ratingform(request):
 
         Rating.objects.create(
             crowdedness=value,
-            studyspot=StudySpot.objects.get(description=ssname)
+            studyspot=StudySpot.objects.get(pk=ssname)
         )
         print(Rating.objects.all)
     return HttpResponse('')

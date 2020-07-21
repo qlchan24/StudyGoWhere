@@ -275,7 +275,7 @@
             // studyspotButton.type = "button";
             studyspotPara.setAttribute(
               "onclick",
-              "openStudyspotPage('{{ studyspot.description }}')"
+              "openStudyspotPage('{{ studyspot.pk }}')"
             );
             studyspottext.innerHTML = "{{ studyspot.description }}";
             studyspotPara.appendChild(studyspotImage);
@@ -311,14 +311,18 @@
         return cookieValue;
       }
 
-      function openStudyspotPage(studyspotDesc) {
+      let user; 
+
+      function openStudyspotPage(studyspotPk) {
         ("{% for studyspot in studyspots %}");
-        if (studyspotDesc == "{{studyspot.description}}") {
+        if (studyspotPk == "{{studyspot.pk}}") {
+          var studyspotDesc = "{{studyspot.description}}"; 
           var aircon = "{{studyspot.airConditioned}}";
           var dfriendly = "{{studyspot.discussionFriendly}}";
           var wsocket = "{{studyspot.wallSockets}}";
           var locname = "{{studyspot.locationName.locationName}}";
           var pkno = "{{studyspot.pk}}";
+          console.log("here are the pk no"+ pkno); 
           var imgurl = "{{studyspot.image.url}}";
         }
         ("{% endfor %}");
@@ -383,6 +387,7 @@
 
         const backButton = document.createElement("button");
         const heading = document.createElement("h2");
+        const reportButton = document.createElement("button");
 
         const studyspotImage = document.createElement("img");
         studyspotImage.className = "ssphoto";
@@ -399,6 +404,11 @@
         backButton.innerHTML = `<< ${locname}`;
         backButton.type = "button";
         backButton.setAttribute("onclick", `openLocationPage("${locname}")`);
+
+        // reportButton.id = "backLocation";
+        reportButton.innerHTML = `Report inaccurate rating`;
+        reportButton.type = "button";
+        reportButton.setAttribute("onclick", `openComplaintPage("${studyspotPk}")`);
 
         heading.className = "ss";
         heading.innerHTML = `Viewing ${studyspotDesc}`;
@@ -435,11 +445,18 @@
         cleareddoc.appendChild(ratings);
         cleareddoc.appendChild(graphdiv);
         cleareddoc.appendChild(rform);
+        cleareddoc.appendChild(reportButton); 
 
         document
           .getElementById("rform")
           .addEventListener("submit", function (e) {
             e.preventDefault();
+
+            if (user == null) {
+               alert("Please log in before contributing a rating")
+               openLoginpage(); 
+               return; 
+            }
 
             var formData = new FormData();
             var valueField = document.getElementById("myRangeSlider").value;
@@ -449,7 +466,7 @@
             headers.append("X-CSRFToken", csrftoken);
 
             formData.append("value", valueField);
-            formData.append("ssname", `${studyspotDesc}`);
+            formData.append("ssname", `${pkno}`); // changed from studyspotDesc to pkno
             formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
 
             fetch('{% url "sgw:ratingform" %}', {
@@ -462,12 +479,60 @@
               .catch((error) => console.error("Error:", error))
               .then((response) => {
                 console.log("Success:", response);
-                openStudyspotPage(studyspotDesc);
+                openStudyspotPage(pkno);
               });
           });
       }
 
-      let user; 
+      function openComplaintPage(studyspotPk) {
+        const doc = document.getElementById("mainInterface");
+        doc.innerHTML = "";
+
+        const backButton = document.createElement("button"); 
+        const heading = document.createElement("h2");
+        const instr1 = document.createElement("h3"); 
+        const instr2 = document.createElement("h3"); 
+
+        backButton.id = "backStudyspot";
+        backButton.innerHTML = `Back to Study Spot`;
+        backButton.type = "button";
+        backButton.setAttribute("onclick", `openStudyspotPage("${studyspotPk}")`);
+
+        heading.className = "ss";
+        heading.innerHTML = `Report inaccurate rating`;
+
+        instr1.className = "ss";
+        instr1.innerHTML = `1. Select the rating to report:`;
+
+        instr2.className = "ss";
+        instr2.innerHTML = `2. Upload a picture to justify: `;
+
+        const ratings = document.createElement("ul");
+        // ratings.className = "ratingslist";
+        ratings.innerHTML = ``;
+        let ratingjson = fetch('{% url "sgw:ratingjson" %}')
+          .then((x) => x.json())
+          .then((x) => {
+            const ratingArray = [];
+            const lol = x.filter((y) => y.fields.studyspot == studyspotPk);
+            lol.forEach((x) => {
+              console.log(x);
+              ratings.innerHTML += `<li>  <input type="radio" name="chooseRating" value=${x.fields.pk}>  <label for="chooseRating"> ${
+                x.fields.crowdedness
+              }% (${x.fields.whenRated.slice(8, 10)}/${x.fields.whenRated.slice(
+                5,
+                7
+              )}, ${
+                Number(x.fields.whenRated.slice(11, 13)) + 8
+              }:${x.fields.whenRated.slice(14, 16)}) </label><br> </li>`;
+            });})
+        
+        doc.appendChild(backButton); 
+        doc.appendChild(heading); 
+        doc.appendChild(instr1); 
+        doc.appendChild(ratings);
+        doc.appendChild(instr2); 
+      }
 
       function openHomePageProfile() {
         L.control.sidebar("sidebar").addTo(map).open("profile");
