@@ -25,6 +25,7 @@ urlpatterns = [
     path("login", views.login_view, name="loginform"),
     path("logout", views.logout_view, name="logout"),
     path("usercreation", views.usercreate, name="usercreation"),
+    path("complaint", views.complaintview, name="complaint"),
     re_path(r'^data.geojson$', GeoJSONLayerView.as_view(model=Location,
                                                         properties=('locationName', 'geom', 'openingTime', 'closingTime')), name="data"),
 ]

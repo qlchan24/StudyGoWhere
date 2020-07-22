@@ -311,18 +311,25 @@
         return cookieValue;
       }
 
-      let user; 
-
+      let user;
+      function reportButtonProcessor() {
+        if (user == null) {
+          alert("Please log in before submitting a complaint");
+          openLoginpage();
+        } else {
+          openComplaintPage(studyspotPk);
+        }
+      }
       function openStudyspotPage(studyspotPk) {
         ("{% for studyspot in studyspots %}");
         if (studyspotPk == "{{studyspot.pk}}") {
-          var studyspotDesc = "{{studyspot.description}}"; 
+          var studyspotDesc = "{{studyspot.description}}";
           var aircon = "{{studyspot.airConditioned}}";
           var dfriendly = "{{studyspot.discussionFriendly}}";
           var wsocket = "{{studyspot.wallSockets}}";
           var locname = "{{studyspot.locationName.locationName}}";
           var pkno = "{{studyspot.pk}}";
-          console.log("here are the pk no"+ pkno); 
+          console.log("here are the pk no" + pkno);
           var imgurl = "{{studyspot.image.url}}";
         }
         ("{% endfor %}");
@@ -408,7 +415,7 @@
         // reportButton.id = "backLocation";
         reportButton.innerHTML = `Report inaccurate rating`;
         reportButton.type = "button";
-        reportButton.setAttribute("onclick", `openComplaintPage("${studyspotPk}")`);
+        reportButton.setAttribute("onclick", "reportButtonProcessor()");
 
         heading.className = "ss";
         heading.innerHTML = `Viewing ${studyspotDesc}`;
@@ -445,7 +452,7 @@
         cleareddoc.appendChild(ratings);
         cleareddoc.appendChild(graphdiv);
         cleareddoc.appendChild(rform);
-        cleareddoc.appendChild(reportButton); 
+        cleareddoc.appendChild(reportButton);
 
         document
           .getElementById("rform")
@@ -453,9 +460,9 @@
             e.preventDefault();
 
             if (user == null) {
-               alert("Please log in before contributing a rating")
-               openLoginpage(); 
-               return; 
+              alert("Please log in before contributing a rating");
+              openLoginpage();
+              return;
             }
 
             var formData = new FormData();
@@ -488,15 +495,18 @@
         const doc = document.getElementById("mainInterface");
         doc.innerHTML = "";
 
-        const backButton = document.createElement("button"); 
+        const backButton = document.createElement("button");
         const heading = document.createElement("h2");
-        const instr1 = document.createElement("h3"); 
-        const instr2 = document.createElement("h3"); 
+        const instr1 = document.createElement("h3");
+        const instr2 = document.createElement("h3");
 
         backButton.id = "backStudyspot";
         backButton.innerHTML = `Back to Study Spot`;
         backButton.type = "button";
-        backButton.setAttribute("onclick", `openStudyspotPage("${studyspotPk}")`);
+        backButton.setAttribute(
+          "onclick",
+          `openStudyspotPage("${studyspotPk}")`
+        );
 
         heading.className = "ss";
         heading.innerHTML = `Report inaccurate rating`;
@@ -506,7 +516,8 @@
 
         instr2.className = "ss";
         instr2.innerHTML = `2. Upload a picture to justify: `;
-
+        const complaintform = document.createElement("form");
+        complaintform.appendChild(instr1);
         const ratings = document.createElement("ul");
         // ratings.className = "ratingslist";
         ratings.innerHTML = ``;
@@ -517,7 +528,9 @@
             const lol = x.filter((y) => y.fields.studyspot == studyspotPk);
             lol.forEach((x) => {
               console.log(x);
-              ratings.innerHTML += `<li>  <input type="radio" name="chooseRating" value=${x.fields.pk}>  <label for="chooseRating"> ${
+              ratings.innerHTML += `<li>  <input type="radio" name="chooseRating" value=${
+                x.pk
+              }>  <label for="chooseRating"> ${
                 x.fields.crowdedness
               }% (${x.fields.whenRated.slice(8, 10)}/${x.fields.whenRated.slice(
                 5,
@@ -525,28 +538,72 @@
               )}, ${
                 Number(x.fields.whenRated.slice(11, 13)) + 8
               }:${x.fields.whenRated.slice(14, 16)}) </label><br> </li>`;
-            });})
-        
-        doc.appendChild(backButton); 
-        doc.appendChild(heading); 
-        doc.appendChild(instr1); 
-        doc.appendChild(ratings);
-        doc.appendChild(instr2); 
+            });
+          });
+        complaintform.appendChild(ratings);
+        complaintform.appendChild(instr2);
+        imginput = document.createElement("input");
+        imginput.type = "file";
+        imginput.name = "image";
+        imginput.setAttribute("accept", "image/*");
+        imginput.setAttribute("required", "");
+
+        submitbutton = document.createElement("input");
+        submitbutton.type = "submit";
+        submitbutton.value = "submit";
+
+        complaintform.appendChild(imginput);
+        complaintform.appendChild(submitbutton);
+        complaintform.onsubmit = async (e) => {
+          e.preventDefault();
+          let headers = new Headers();
+          const csrftoken = getCookie("csrftoken");
+          headers.append("X-CSRFToken", csrftoken);
+          formdata = new FormData(complaintform);
+
+          let response = await fetch('{% url "sgw:complaint" %}', {
+            method: "POST",
+            body: formdata,
+            headers: headers,
+            credentials: "same-origin",
+          })
+            .then((resp) => resp.text())
+            .then((x) => {
+              if (x == "good") {
+                alert("Thank you. Your complaint will be reviewed shortly!");
+                openStudyspotPage(studyspotPk);
+              } else {
+                alert(
+                  "You are not signed in. Please log in to file a complaint"
+                );
+                openLoginpage();
+              }
+            });
+        };
+
+        doc.appendChild(backButton);
+        doc.appendChild(heading);
+        doc.appendChild(complaintform);
       }
 
       function openHomePageProfile() {
         L.control.sidebar("sidebar").addTo(map).open("profile");
         const doc = document.getElementById("mainInterfaceProfile");
         doc.innerHTML = "";
-        console.log(`{{ user.is_authenticated }}`); 
-        if ("{{user.is_authenticated }}" != "True" && user == null) { openLoginpage(); return; }
-        if ("{{user.is_authenticated }}" == "True" ) { user = "{{ user.get_username }}"; }
+        console.log(`{{ user.is_authenticated }}`);
+        if ("{{user.is_authenticated }}" != "True" && user == null) {
+          openLoginpage();
+          return;
+        }
+        if ("{{user.is_authenticated }}" == "True") {
+          user = "{{ user.get_username }}";
+        }
 
         const greeting = document.createElement("h2");
         greeting.className = "profile";
-        
+
         greeting.innerHTML = `Hello, ${user}`;
-        
+
         const contribBtn = document.createElement("button");
         contribBtn.innerHTML = `Contribute a place`;
         contribBtn.type = "button";
@@ -554,18 +611,18 @@
 
         doc.appendChild(greeting);
         doc.appendChild(contribBtn);
-        console.log("is authenticated"); 
+        console.log("is authenticated");
 
         //logout button: to be formatted
         const logoutButton = document.createElement("button");
         logoutButton.textContent = "log out";
         logoutButton.onclick = (e) => {
           fetch("{% url 'sgw:logout' %}").then((r) => {
-          user=null;
-          openLoginpage();  });
+            user = null;
+            openLoginpage();
+          });
         };
         doc.appendChild(logoutButton);
-        
 
         //under construction
 
@@ -584,7 +641,6 @@
       // users are redirected here from openHomePageProfile() if user = anonymous, or from openUserRegpage()
       // after they submit the form
       function openLoginpage() {
-
         L.control.sidebar("sidebar").addTo(map).open("profile");
         const doc = document.getElementById("mainInterfaceProfile");
         doc.innerHTML = "";
@@ -593,7 +649,8 @@
         greeting.className = "profile";
         subgreeting.className = "profile";
         greeting.innerHTML = "Hello, stranger";
-        subgreeting.innerHTML = "You have to be logged in before contributing a rating or study spot.";
+        subgreeting.innerHTML =
+          "You have to be logged in before contributing a rating or study spot.";
 
         const newUserBtn = document.createElement("button");
         newUserBtn.innerHTML = `I don't have an account yet`;
@@ -637,15 +694,17 @@
               if (data["result"] == "Success!") {
                 user = data["username"];
                 openHomePageProfile();
-                 } //may be the openHomePageProfile() instead once the form is relocated
-                else { alert(data["message"]);  } }
-            ); 
+              } //may be the openHomePageProfile() instead once the form is relocated
+              else {
+                alert(data["message"]);
+              }
+            });
         };
-        
-        doc.appendChild(greeting); 
-        doc.appendChild(subgreeting); 
+
+        doc.appendChild(greeting);
+        doc.appendChild(subgreeting);
         doc.appendChild(loginform);
-        doc.appendChild(newUserBtn); 
+        doc.appendChild(newUserBtn);
       }
 
       // users are redirected here from openLoginpage() if they clicked new user button
@@ -690,7 +749,7 @@
                 : alert(data["message"])
             );
         };
-        doc.appendChild(backBtn); 
+        doc.appendChild(backBtn);
         doc.appendChild(greeting);
         doc.appendChild(userRegForm);
       }

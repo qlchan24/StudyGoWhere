@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 
-from .models import StudySpot, Rating, Location
+from .models import *
 from .forms import *
 from django.urls import reverse
 
@@ -110,7 +110,6 @@ def mapview(request):
     request_context = RequestContext(request)
     request_context.push(context)
     return render(request, "sgw/leaflet.html", request_context.flatten())
-    render()
 
 
 def locationjson(request):
@@ -209,6 +208,23 @@ def usercreate(request):
             response_data['message'] = 'failed creation'
         return HttpResponse(json.dumps(response_data), content_type="application/json")
 
+
+def complaintview(request):
+    if request.method == 'POST':
+        print(request.POST)
+        if request.user.is_authenticated == False:
+            print('not')
+            # return a flag for the front end to receive and point to login
+            return HttpResponse('unauthorised')
+
+        Complaint.objects.create(
+            user=request.user,
+            image=request.FILES['image'],
+            rating=Rating.objects.get(
+                pk=request.POST['chooseRating'])
+        )
+        print("success")
+    return HttpResponse('good')
 
 # def my_view(request):
 #     username = request.POST['username']

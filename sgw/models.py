@@ -1,6 +1,7 @@
 from django.db import models
 from django import forms
 from djgeojson.fields import PointField
+from django.contrib.auth.models import User
 
 # Create your models here.
 BOOL_CHOICES = ((True, 'Yes'), (False, 'No'))
@@ -56,3 +57,13 @@ class StudySpotContrib(models.Model):
         choices=BOOL_CHOICES, blank=False, null=True, default=None)
     wallSockets = models.BooleanField(
         choices=BOOL_CHOICES, blank=False, null=True, default=None)
+
+
+class Complaint(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='complaints')
+    time = models.DateTimeField(auto_now_add=True)
+    rating = models.ForeignKey(Rating, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"submitted by {self.user} at {self.time}"
