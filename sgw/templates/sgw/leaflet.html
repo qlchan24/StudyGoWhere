@@ -312,7 +312,7 @@
       }
 
       let user;
-      function reportButtonProcessor() {
+      function reportButtonProcessor(studyspotPk) {
         if (user == null) {
           alert("Please log in before submitting a complaint");
           openLoginpage();
@@ -415,7 +415,10 @@
         // reportButton.id = "backLocation";
         reportButton.innerHTML = `Report inaccurate rating`;
         reportButton.type = "button";
-        reportButton.setAttribute("onclick", "reportButtonProcessor()");
+        reportButton.setAttribute(
+          "onclick",
+          `reportButtonProcessor(${studyspotPk})`
+        );
 
         heading.className = "ss";
         heading.innerHTML = `Viewing ${studyspotDesc}`;
