@@ -477,7 +477,6 @@
 
             formData.append("value", valueField);
             formData.append("ssname", `${pkno}`); // changed from studyspotDesc to pkno
-            formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
 
             fetch('{% url "sgw:ratingform" %}', {
               method: "POST",
