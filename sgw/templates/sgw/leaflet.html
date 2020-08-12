@@ -431,7 +431,7 @@
         // lol.forEach((x) => (ratings.innerHTML += `<li> ${x} </li>`));
 
         rform.id = "rform";
-        rform.innerHTML = `{%csrf_token%}
+        rform.innerHTML = `
         <p><label for = 'value'> Gauge the crowdedness of this place: </label></p>
         <p>Empty <input type="range" min="1" max="100" value="50" class="slider" id="myRangeSlider"> Packed </p>
         <input type="submit" value="Submit">
@@ -669,7 +669,7 @@
         loginform.enctype = "multipart/form-data";
         loginform.method = "post";
         loginform.action = "{% url 'sgw:loginform' %}";
-        loginform.innerHTML = `{%csrf_token%}
+        loginform.innerHTML = `
         <table>
           {{ lform.as_p }}
         </table>
@@ -686,11 +686,15 @@
 
         loginform.onsubmit = async (e) => {
           e.preventDefault();
-
+          let headers = new Headers();
+          const csrftoken = getCookie("csrftoken");
+          headers.append("X-CSRFToken", csrftoken);
           formdata = new FormData(loginform);
           let response = await fetch('{% url "sgw:loginform" %}', {
             method: "POST",
             body: formdata,
+            headers: headers,
+            credentials: "same-origin",
           })
             .then((resp) => resp.json())
             .then((data) => {
@@ -731,7 +735,7 @@
         userRegForm.enctype = "multipart/form-data";
         userRegForm.method = "post";
         userRegForm.action = "{% url 'sgw:usercreation' %}";
-        userRegForm.innerHTML = `{%csrf_token%}
+        userRegForm.innerHTML = `
         <table>
           {{ uform.as_p }}
         </table>
@@ -739,11 +743,15 @@
         `;
         userRegForm.onsubmit = async (e) => {
           e.preventDefault();
-
+          let headers = new Headers();
+          const csrftoken = getCookie("csrftoken");
+          headers.append("X-CSRFToken", csrftoken);
           formdata = new FormData(userRegForm);
           let response = await fetch('{% url "sgw:usercreation" %}', {
             method: "POST",
             body: formdata,
+            headers: headers,
+            credentials: "same-origin",
           })
             .then((resp) => resp.json())
             .then((data) =>
@@ -771,7 +779,7 @@
         const contribform = document.createElement("form");
         contribform.id = "contribform";
         contribform.enctype = "multipart/form-data";
-        contribform.innerHTML = `{%csrf_token%}
+        contribform.innerHTML = `
         <table>
           <b>
           <p>1. Click on the map to set the location</p>
@@ -830,10 +838,15 @@
           let geom = [lat, lng];
           formdata.append("geom", geom);
           formdata.append("user", "any");
+          let headers = new Headers();
+          const csrftoken = getCookie("csrftoken");
+          headers.append("X-CSRFToken", csrftoken);
 
           let response = await fetch('{% url "sgw:studyspotform" %}', {
             method: "POST",
             body: formdata,
+            headers: headers,
+            credentials: "same-origin",
           });
           map.closePopup(popup);
           alert("Thanks for your contribution!");
