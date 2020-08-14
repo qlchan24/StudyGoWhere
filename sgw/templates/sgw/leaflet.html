@@ -44,9 +44,13 @@
       var map;
 
       window.addEventListener("map:init", function (event) {
+        if ("{{user.is_authenticated }}" == "True") {
+          user = "{{ user.get_username }}";
+        }
         openHomePageProfile();
         openFavorites();
         openHomePage();
+
         map = event.detail.map;
 
         // add sidebar to mapview
@@ -527,6 +531,8 @@
               .catch((error) => console.error("Error:", error))
               .then((response) => {
                 console.log("Success:", response);
+                openFavorites();
+                openHomePage();
                 openStudyspotPage(pkno);
               });
           });
@@ -667,13 +673,14 @@
         L.control.sidebar("sidebar").addTo(map).open("favourites");
         const doc = document.getElementById("favoritesInterface");
         doc.innerHTML = "";
-        if ("{{user.is_authenticated }}" != "True" && user == null) {
-          openLoginpage();
+        if (user == null) {
+          const infotext = document.createElement("h2");
+          infotext.innerText =
+            "Please login via the profile tab to access favourites";
+          doc.appendChild(infotext);
           return;
         }
-        if ("{{user.is_authenticated }}" == "True" && user == null) {
-          user = "{{ user.get_username }}";
-        }
+        doc.innerHTML = "";
         const favlist = document.createElement("ul");
         favlist.className = "favlist";
         let favhtml = "";
@@ -724,12 +731,9 @@
         const doc = document.getElementById("mainInterfaceProfile");
         doc.innerHTML = "";
         console.log(`{{ user.is_authenticated }}`);
-        if ("{{user.is_authenticated }}" != "True" && user == null) {
+        if (user == null) {
           openLoginpage();
           return;
-        }
-        if ("{{user.is_authenticated }}" == "True" && user == null) {
-          user = "{{ user.get_username }}";
         }
 
         const greeting = document.createElement("h2");
@@ -752,6 +756,8 @@
         logoutButton.onclick = (e) => {
           fetch("{% url 'sgw:logout' %}").then((r) => {
             user = null;
+            openFavorites();
+            openHomePageProfile();
             openLoginpage();
           });
         };
@@ -830,6 +836,7 @@
             .then((data) => {
               if (data["result"] == "Success!") {
                 user = data["username"];
+                openFavorites();
                 openHomePageProfile();
               } //may be the openHomePageProfile() instead once the form is relocated
               else {

@@ -134,7 +134,7 @@ def ratingjson(request):
 
 def favoritesjson(request):
     data = serializers.serialize(
-        "json", Rating.objects.filter(studyspot__users_favorited=request.user).order_by("studyspot").all(), cls=DjangoJSONEncoder)
+        "json", Rating.objects.filter(studyspot__users_favorited=request.user).order_by("studyspot", "-whenRated").all(), cls=DjangoJSONEncoder)
     return HttpResponse(data, content_type="application/JSON")
 
 
