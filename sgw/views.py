@@ -13,6 +13,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 import json
 from django.contrib.auth import authenticate, login, logout
 from django.template import RequestContext
+from django.contrib.auth.models import User
 # from .serializers import RatingSerializer, LocationSerializer, StudySpotSerializer
 
 # Create your views here.
@@ -103,6 +104,7 @@ def mapview(request):
         "locations": list(Location.objects.all()),
         "studyspots": list(StudySpot.objects.all()),
         "ratings": list(Rating.objects.all()),
+        "users": User.objects.all(),
         "cform": contribform,
         "lform": loginform,
         "uform": usercreateform
@@ -126,7 +128,13 @@ def studyspotjson(request):
 
 def ratingjson(request):
     data = serializers.serialize(
-        "json", Rating.objects.all(), cls=DjangoJSONEncoder)
+        "json", Rating.objects.order_by("-whenRated").all(), cls=DjangoJSONEncoder)
+    return HttpResponse(data, content_type="application/JSON")
+
+
+def favoritesjson(request):
+    data = serializers.serialize(
+        "json", Rating.objects.filter(studyspot__users_favorited=request.user).order_by("studyspot").all(), cls=DjangoJSONEncoder)
     return HttpResponse(data, content_type="application/JSON")
 
 
@@ -225,6 +233,21 @@ def complaintview(request):
         )
         print("success")
     return HttpResponse('good')
+
+
+def addtofavorites(request):
+    if request.method == "POST":
+        curruser = User.objects.get(username=request.POST["user"])
+        if (request.POST["is_favorited"] == "true"):
+            StudySpot.objects.get(
+                pk=request.POST['id']).users_favorited.add(curruser)
+            print("favorited")
+        else:
+            StudySpot.objects.get(
+                pk=request.POST['id']).users_favorited.remove(curruser)
+            print("unfavorited")
+    return HttpResponse("")
+
 
 # def my_view(request):
 #     username = request.POST['username']

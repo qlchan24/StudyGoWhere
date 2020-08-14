@@ -26,6 +26,8 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout"),
     path("usercreation", views.usercreate, name="usercreation"),
     path("complaint", views.complaintview, name="complaint"),
+    path('addtofavorites', views.addtofavorites, name="addtofavorites"),
+    path("favjson", views.favoritesjson, name="favjson"),
     re_path(r'^data.geojson$', GeoJSONLayerView.as_view(model=Location,
                                                         properties=('locationName', 'geom', 'openingTime', 'closingTime')), name="data"),
 ]

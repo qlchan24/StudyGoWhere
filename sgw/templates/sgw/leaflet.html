@@ -45,6 +45,7 @@
 
       window.addEventListener("map:init", function (event) {
         openHomePageProfile();
+        openFavorites();
         openHomePage();
         map = event.detail.map;
 
@@ -167,7 +168,10 @@
         L.control.sidebar("sidebar").addTo(map).open("home");
         const doc = document.getElementById("mainInterface");
         doc.innerHTML = "";
-        doc.appendChild(filterSection);
+        const stickysection = document.createElement("div");
+        stickysection.className = "st";
+        stickysection.appendChild(filterSection);
+        doc.appendChild(stickysection);
 
         const ul = document.createElement("ul");
 
@@ -213,7 +217,10 @@
 
         const doc = document.getElementById("mainInterface");
         doc.innerHTML = "";
-        doc.appendChild(filterSection);
+        const stickysection = document.createElement("div");
+        stickysection.className = "st";
+        stickysection.appendChild(filterSection);
+        doc.appendChild(stickysection);
 
         const backButton = document.createElement("button");
         const name = document.createElement("h2");
@@ -263,6 +270,7 @@
             studyspotPara = document.createElement("li");
             studyspotImage = document.createElement("img");
             studyspottext = document.createElement("div");
+
             //studyspotButton = document.createElement("button");
             //studyspotPara.innerHTML = "{{ studyspot.description }}";
 
@@ -287,8 +295,8 @@
         }
         ("{% endfor %}");
 
-        doc.appendChild(backButton);
-        doc.appendChild(name);
+        stickysection.appendChild(backButton);
+        stickysection.appendChild(name);
         doc.appendChild(timing);
         doc.appendChild(listing);
       }
@@ -320,6 +328,7 @@
           openComplaintPage(studyspotPk);
         }
       }
+      var favorites = {};
       function openStudyspotPage(studyspotPk) {
         ("{% for studyspot in studyspots %}");
         if (studyspotPk == "{{studyspot.pk}}") {
@@ -331,6 +340,15 @@
           var pkno = "{{studyspot.pk}}";
           console.log("here are the pk no" + pkno);
           var imgurl = "{{studyspot.image.url}}";
+          if (favorites["{{studyspot.pk}}"] == undefined) {
+            usersfavorited = [];
+            ("{% for user in studyspot.users_favorited.all %}");
+            usersfavorited.push("{{user}}");
+            ("{% endfor %}");
+            console.log("new data for fav:");
+            console.log(usersfavorited);
+            favorites["{{studyspot.pk}}"] = usersfavorited;
+          }
         }
         ("{% endfor %}");
 
@@ -342,16 +360,20 @@
           .then((x) => {
             const ratingArray = [];
             const lol = x.filter((y) => y.fields.studyspot == pkno);
+            var count = 0;
             lol.forEach((x) => {
               console.log(x);
-              ratings.innerHTML += `<li> ${
-                x.fields.crowdedness
-              }% (${x.fields.whenRated.slice(8, 10)}/${x.fields.whenRated.slice(
-                5,
-                7
-              )}, ${
-                Number(x.fields.whenRated.slice(11, 13)) + 8
-              }:${x.fields.whenRated.slice(14, 16)}) </li>`;
+              if (count < 10) {
+                ratings.innerHTML += `<li> ${
+                  x.fields.crowdedness
+                }% (${x.fields.whenRated.slice(
+                  8,
+                  10
+                )}/${x.fields.whenRated.slice(5, 7)}, ${
+                  Number(x.fields.whenRated.slice(11, 13)) + 8
+                }:${x.fields.whenRated.slice(14, 16)}) </li>`;
+                count++;
+              }
               ratingArray.push(x);
             });
             ratingDict = {};
@@ -393,7 +415,9 @@
           });
 
         const backButton = document.createElement("button");
+        const headingwrapper = document.createElement("div");
         const heading = document.createElement("h2");
+        const favoriteIcon = document.createElement("i");
         const reportButton = document.createElement("button");
 
         const studyspotImage = document.createElement("img");
@@ -420,8 +444,20 @@
           `reportButtonProcessor(${studyspotPk})`
         );
 
-        heading.className = "ss";
+        headingwrapper.className = "ss";
+        headingwrapper.id = "headingwrapper";
         heading.innerHTML = `Viewing ${studyspotDesc}`;
+        heading.className = "ss";
+        favoriteIcon.id = "favoriteIcon";
+        if (favorites[studyspotPk].includes(user)) {
+          favoriteIcon.setAttribute("class", "fa fa-star");
+        } else {
+          favoriteIcon.setAttribute("class", "fa fa-star-o");
+        }
+
+        favoriteIcon.setAttribute("aria-hidden", "true");
+        headingwrapper.appendChild(favoriteIcon);
+        headingwrapper.appendChild(heading);
         attribs.className = "ss";
         attribs.innerHTML = `<p>Air-conditioned: ${aircon}</p>
                 <p>Can hold discussions: ${dfriendly}</p>
@@ -448,8 +484,11 @@
         const cleareddoc = document.getElementById("mainInterface");
 
         cleareddoc.innerHTML = "";
-        cleareddoc.appendChild(backButton);
-        cleareddoc.appendChild(heading);
+        const stickysection = document.createElement("div");
+        stickysection.className = "st";
+        stickysection.appendChild(backButton);
+        stickysection.appendChild(headingwrapper);
+        cleareddoc.appendChild(stickysection);
         cleareddoc.appendChild(studyspotImage);
         cleareddoc.appendChild(attribs);
         cleareddoc.appendChild(ratings);
@@ -491,6 +530,42 @@
                 openStudyspotPage(pkno);
               });
           });
+        favoriteIcon.onclick = async (e) => {
+          if (user == null) {
+            alert("Please login to add favorites");
+            openLoginpage();
+            return;
+          }
+          let is_favorited = false;
+          if (favorites[studyspotPk].includes(user)) {
+            const i = favorites[studyspotPk].indexOf(user);
+            favorites[studyspotPk].splice(i, 1);
+            is_favorited = false;
+          } else {
+            favorites[studyspotPk].push(user);
+            is_favorited = true;
+          }
+          let headers = new Headers();
+          const csrftoken = getCookie("csrftoken");
+          headers.append("X-CSRFToken", csrftoken);
+          let formData = new FormData();
+          formData.append("is_favorited", is_favorited);
+          formData.append("id", studyspotPk);
+          formData.append("user", user);
+          fetch('{% url "sgw:addtofavorites" %}', {
+            method: "POST",
+            body: formData,
+            headers: headers,
+            credentials: "same-origin",
+          }).then((resp) => {
+            is_favorited
+              ? favoriteIcon.setAttribute("class", "fa fa-star")
+              : favoriteIcon.setAttribute("class", "fa fa-star-o");
+            openFavorites();
+            openHomePage();
+            openStudyspotPage(studyspotPk);
+          });
+        };
       }
 
       function openComplaintPage(studyspotPk) {
@@ -588,6 +663,62 @@
         doc.appendChild(complaintform);
       }
 
+      function openFavorites() {
+        L.control.sidebar("sidebar").addTo(map).open("favourites");
+        const doc = document.getElementById("favoritesInterface");
+        doc.innerHTML = "";
+        if ("{{user.is_authenticated }}" != "True" && user == null) {
+          openLoginpage();
+          return;
+        }
+        if ("{{user.is_authenticated }}" == "True" && user == null) {
+          user = "{{ user.get_username }}";
+        }
+        const favlist = document.createElement("ul");
+        favlist.className = "favlist";
+        let favhtml = "";
+        fetch('{% url "sgw:favjson" %}')
+          .then((x) => x.json())
+          .then((x) => {
+            var ss = null;
+            var first = true;
+            var count = 0;
+            console.log(x);
+            for (rt of x) {
+              if (ss != rt.fields.studyspot) {
+                count = 0;
+                if (first == false) {
+                  favhtml += "</ul></li>";
+                }
+                ss = rt.fields.studyspot;
+                ("{% for ss in studyspots %}");
+                if (ss == parseInt("{{ss.pk}}")) {
+                  favhtml += `<li class="studyspotbutton" onclick="openHomePage();openStudyspotPage({{ss.pk}});">
+                        <img src="{{ss.image.url}}" class="photo"><h4>{{ss.description}}</h4>
+                        <p><i>{{ss.locationName}}</i></p><p>Most recent crowdedness:</p><ul>
+                        `;
+                }
+                ("{% endfor %}");
+              }
+              if (count < 3) {
+                favhtml += `<li> ${
+                  rt.fields.crowdedness
+                }% (${rt.fields.whenRated.slice(
+                  8,
+                  10
+                )}/${rt.fields.whenRated.slice(5, 7)}, ${
+                  Number(rt.fields.whenRated.slice(11, 13)) + 8
+                }:${rt.fields.whenRated.slice(14, 16)}) </li>`;
+                count++;
+              }
+              first = false;
+            }
+            favhtml += "</ul></li>";
+            favlist.innerHTML = favhtml;
+            doc.appendChild(favlist);
+          });
+      }
+
       function openHomePageProfile() {
         L.control.sidebar("sidebar").addTo(map).open("profile");
         const doc = document.getElementById("mainInterfaceProfile");
@@ -597,7 +728,7 @@
           openLoginpage();
           return;
         }
-        if ("{{user.is_authenticated }}" == "True") {
+        if ("{{user.is_authenticated }}" == "True" && user == null) {
           user = "{{ user.get_username }}";
         }
 
@@ -898,6 +1029,8 @@
             Favourites
             <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
           </h1>
+          <div id="favoritesInterface"></div>
+          <p>copyright (C) 2020 studygowhere inc</p>
         </div>
 
         <div class="sidebar-pane" id="profile">

@@ -41,33 +41,38 @@ div .sidebar-header {
   top: 3px;
   z-index: 100;
 }
-
-/*for filter section*/
-div .fs {
+div.st {
   position: sticky;
   top: 83px;
   background-color: white;
   z-index: 100;
+  border-bottom: 1px solid lightgray;
 }
 
 /*for back buttons*/
 #backHome {
-  position: sticky;
-  top: 158px;
   z-index: 100;
   background-color: white;
 }
 
 #backLocation {
-  position: sticky;
-  top: 80px;
   z-index: 100;
   background-color: white;
 }
 
-h2:not(.profile) {
-  position: sticky;
-  top: 205px;
+#headingwrapper {
+  padding-top: 15px;
+  display: flex;
+  background-color: white;
+  width: 99%;
+}
+
+.ss i {
+  align-self: flex-start;
+  min-width: 17px;
+  padding-top: 5px;
+}
+h2:not(.profile, .ss) {
   background-color: white;
   z-index: 100;
   margin-top: 0;
@@ -81,10 +86,9 @@ h3:not(.ss):not(.profile) {
 }
 
 h2.ss {
-  position: sticky;
-  top: 127px;
   background-color: white;
   z-index: 100;
+  margin: 0;
 }
 
 /* add padding  */
@@ -120,7 +124,7 @@ h2.ss {
   display: block; /* Make it into a block element to fill the whole list */
 }
 
-#mainInterface .studyspotbutton {
+.studyspotbutton {
   width: auto;
   overflow: auto;
   border: 1px solid #ddd; /* Add a border to all links */
@@ -135,9 +139,10 @@ h2.ss {
 
 #myUL li button:hover:not(.header),
 #mainInterface button:hover:not(.header),
-#mainInterface .studyspotbutton:hover:not(.header),
+.studyspotbutton:hover:not(.header),
 #mainInterfaceProfile button:hover:not(.header) {
   background-color: #eee; /* Add a hover effect to all links, except for headers */
+  cursor: pointer;
 }
 
 .photo {
@@ -149,13 +154,23 @@ h2.ss {
   max-width: 100%;
 }
 
-#mainInterface .studyspotbutton div {
+.studyspotbutton div {
   margin: auto;
 }
 
 #backHomeProfile {
   position: sticky;
-  top: 39px;
+  top: 40px;
   z-index: 100;
   background-color: white;
+}
+
+#favoritesInterface ul {
+  padding: 0;
+}
+#favoritesInterface ul h4 {
+  margin: 0;
+}
+#favoritesInterface ul p {
+  margin: 10px 0px;
 }

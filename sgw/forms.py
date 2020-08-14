@@ -8,7 +8,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 class ContributeStudySpotForm(forms.ModelForm):
     class Meta:
         model = StudySpot
-        fields = '__all__'
+        exclude = ["users_favorited"]
         widgets = {'airConditioned': forms.RadioSelect,
                    'discussionFriendly': forms.RadioSelect,
                    'wallSockets': forms.RadioSelect
