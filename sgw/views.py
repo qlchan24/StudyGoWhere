@@ -14,6 +14,7 @@ import json
 from django.contrib.auth import authenticate, login, logout
 from django.template import RequestContext
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import ensure_csrf_cookie
 # from .serializers import RatingSerializer, LocationSerializer, StudySpotSerializer
 
 # Create your views here.
@@ -95,6 +96,7 @@ def contributeLocation(request):
     return render(request, 'contributeLocation.html', {'form': form})
 
 
+@ensure_csrf_cookie
 def mapview(request):
     contribform = StudySpotContribForm()
     loginform = AuthenticationForm()
